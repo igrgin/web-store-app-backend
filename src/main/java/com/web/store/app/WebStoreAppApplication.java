@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WebStoreAppApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(WebStoreAppApplication.class, args);
+
     }
 
 }
