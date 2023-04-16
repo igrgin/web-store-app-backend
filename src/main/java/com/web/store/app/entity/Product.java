@@ -2,6 +2,7 @@ package com.web.store.app.entity;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -15,6 +16,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class Product {
 
     @Id
+    @NotEmpty
+    @Field(type = FieldType.Keyword)
     private String id;
     @NotEmpty
     @Field(type = FieldType.Keyword)
@@ -26,12 +29,14 @@ public class Product {
     @Field(type = FieldType.Keyword)
     private String name;
     @NotNull
+    @PositiveOrZero
     @Field(type = FieldType.Float)
     private Float price;
     @NotEmpty
     @Field(type = FieldType.Keyword)
     private String category;
     @NotNull
+    @PositiveOrZero
     @Field(type = FieldType.Long)
     private Long stock;
     @NotNull

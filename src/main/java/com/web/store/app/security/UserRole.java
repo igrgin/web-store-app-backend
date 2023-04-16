@@ -1,4 +1,4 @@
-package com.web.store.app.util.shared;
+package com.web.store.app.security;
 
 public enum UserRole {
 

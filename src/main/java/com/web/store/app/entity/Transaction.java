@@ -1,6 +1,7 @@
 package com.web.store.app.entity;
 
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,8 +22,9 @@ public class Transaction {
     @Id
     @Field(type = FieldType.Keyword)
     private String id;
-    private String userId;
+    private Integer userId;
     @Field(type = FieldType.Date, format = DateFormat.date_time)
+    @PastOrPresent(message = "Date must be in the past or present")
     private Date createdAt;
     private List<Long> productIds;
 }
