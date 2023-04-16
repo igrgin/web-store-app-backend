@@ -1,5 +1,7 @@
 package com.web.store.app.entity;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -13,6 +15,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @AllArgsConstructor
 @Data
 @Document(indexName = "product", versionType = Document.VersionType.INTERNAL)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Product {
 
     @Id

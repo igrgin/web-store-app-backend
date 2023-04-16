@@ -1,5 +1,7 @@
 package com.web.store.app.entity;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.web.store.app.security.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -21,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +31,11 @@ public class User implements UserDetails {
     @Size(max = 256)
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:\\.[a-zA-Z]{2,})?$")
     private String email;
-    @Size(max = 256)
+    @Size(max = 256, message = "First name has to be smaller than 256")
+    @Column(name = "first_name")
     private String firstName;
-    @Size(max = 256)
+    @Size(max = 256, message = "Last name has to be smaller than 256")
+    @Column(name = "last_name")
     private String lastName;
     @Size(max = 256)
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}|^(?=.*\\d)(?=.*[A-Z])(?=.*\\W).{8,}|^(?=.*[a-z])(?=.*[A-Z])(?=.*\\W).{8,}|^(?=.*[a-z])(?=.*\\d)(?=.*\\W).{8,}$")
