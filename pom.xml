@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.web.store</groupId>
-    <artifactId>web-store-app</artifactId>
+    <artifactId>web-store-app-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>web-store-app</name>
     <description>web-store-app</description>
