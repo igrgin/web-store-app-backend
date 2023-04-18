@@ -30,7 +30,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new java.util.Date(System.currentTimeMillis() + 1000 * 14 * 24 * 60 * 60))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
+                .signWith(getSignInKey(), SignatureAlgorithm.HS512).compact();
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -54,7 +54,9 @@ public class JwtServiceImpl implements JwtService {
                 .getBody();
     }
 
-    private boolean isTokenExpired(String token) {
+    @Override
+    public boolean isTokenExpired(String token) {
+
         return extractExpiration(token).before(new Date());
     }
 

@@ -3,11 +3,16 @@ package com.web.store.app.service;
 import com.web.store.app.dto.AuthenticationRequest;
 import com.web.store.app.dto.AuthenticationResponse;
 import com.web.store.app.dto.RegisterRequest;
+import com.web.store.app.entity.Token;
 import com.web.store.app.entity.User;
+import com.web.store.app.model.TokenType;
+import com.web.store.app.repository.sql.TokenRepository;
 import com.web.store.app.repository.sql.UserRepository;
 import com.web.store.app.security.JwtService;
 import com.web.store.app.security.UserRole;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -22,6 +28,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
+
+    @PostConstruct
+    private void deleteAllInvalidTokens() {
+        log.info("Deleting invalid tokens");
+        tokenRepository.deleteTokensByTokenIn(tokenRepository.findAll()
+                .stream()
+                .map(Token::getToken)
+                .filter(jwtService::isTokenExpired).toList());
+    }
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
@@ -33,6 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
+        saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
@@ -42,7 +59,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         var jwtToken = jwtService.generateToken(user);
+        deleteAllValidTokensByUser(user);
+        saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    private void deleteAllValidTokensByUser(User user) {
+        var validTokens = tokenRepository.findAllTokensByUser(user.getId());
+
+        if (validTokens.isEmpty()) return;
+
+        tokenRepository.deleteTokensByTokenIn(validTokens.stream().map(Token::getToken).toList());
+    }
+
+    private void saveUserToken(User user, String jwtToken) {
+        var token = Token.builder()
+                .user(user)
+                .tokenType(TokenType.BEARER)
+                .token(jwtToken)
+                .build();
+        tokenRepository.save(token);
     }
 
 }
