@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface TransactionRepository extends ElasticsearchRepository<Transaction, String> {
 
-    List<Transaction> findTransactionByUserId(Integer userId);
+    List<Transaction> findTransactionsByUserId(Long userId);
 
 }

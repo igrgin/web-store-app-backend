@@ -6,11 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class WebStoreAppApplication {
+public class WebStoreAppBackendApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(WebStoreAppApplication.class, args);
+        SpringApplication.run(WebStoreAppBackendApplication.class, args);
 
     }
 

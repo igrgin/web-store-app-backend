@@ -12,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -25,9 +25,11 @@ public class Transaction {
     @Id
     @Field(type = FieldType.Keyword)
     private String id;
-    private Integer userId;
+    @Field(type = FieldType.Long)
+    private Long userId;
     @Field(type = FieldType.Date, format = DateFormat.date_time)
     @PastOrPresent(message = "Date must be in the past or present")
-    private Date createdAt;
-    private List<Long> productIds;
+    private ZonedDateTime createdAt;
+    @Field(type = FieldType.Keyword)
+    private List<String> productIds;
 }

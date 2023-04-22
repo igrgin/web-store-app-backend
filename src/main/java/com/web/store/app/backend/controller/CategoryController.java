@@ -52,14 +52,14 @@ public class CategoryController {
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Void> deleteCategoriesById(@PathVariable Integer id) {
+    private ResponseEntity<Void> deleteCategoriesById(@PathVariable Integer id) {
         categoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
+    private Map<String, String> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
         errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -72,7 +72,7 @@ public class CategoryController {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public Map<String, String> handleExceptions(
+    private Map<String, String> handleExceptions(
             Exception ex) {
         errors = new HashMap<>();
         String fieldName = ex.getClass().getSimpleName();

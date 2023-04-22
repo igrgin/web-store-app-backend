@@ -13,7 +13,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
     @Query("""
             SELECT t FROM Token t
-            INNER JOIN User u ON u.id = t.user.id
+            INNER JOIN AppUser u ON u.id = t.user.id
             WHERE t.user.id = ?1""")
     List<Token> findAllTokensByUser(Long userId);
 

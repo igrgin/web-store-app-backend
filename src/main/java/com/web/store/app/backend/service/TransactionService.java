@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface TransactionService {
 
-    Optional<List<TransactionDTO>> findUserTransactions(Integer userId);
+    Optional<List<TransactionDTO>> findUserTransactions(Long userId);
+
+    Optional<TransactionDTO> saveTransaction(TransactionDTO transactionDTO);
 }

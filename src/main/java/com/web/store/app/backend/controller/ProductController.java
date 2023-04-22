@@ -18,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/product/api/")
 @AllArgsConstructor
-@CrossOrigin(origins = "http")
+@CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
 public class ProductController {
 
@@ -100,14 +100,14 @@ public class ProductController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> deleteProductsById(@RequestBody List<String> ids) {
+    private ResponseEntity<Void> deleteProductsById(@RequestBody List<String> ids) {
         productService.deleteProductsById(ids);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
+    private Map<String, String> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
         var errors = new HashMap<String, String>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -120,7 +120,7 @@ public class ProductController {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public Map<String, String> handleExceptions(
+    private Map<String, String> handleExceptions(
             Exception ex) {
         var errors = new HashMap<String, String>();
         var fieldName = ex.getClass().getSimpleName();

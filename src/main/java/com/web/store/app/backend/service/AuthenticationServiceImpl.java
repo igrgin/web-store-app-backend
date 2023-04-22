@@ -1,15 +1,15 @@
 package com.web.store.app.backend.service;
 
-import com.web.store.app.backend.entity.Token;
-import com.web.store.app.backend.entity.User;
-import com.web.store.app.backend.model.TokenType;
-import com.web.store.app.backend.repository.sql.TokenRepository;
-import com.web.store.app.backend.security.JwtService;
-import com.web.store.app.backend.security.UserRole;
 import com.web.store.app.backend.dto.AuthenticationRequest;
 import com.web.store.app.backend.dto.AuthenticationResponse;
 import com.web.store.app.backend.dto.RegisterRequest;
-import com.web.store.app.backend.repository.sql.UserRepository;
+import com.web.store.app.backend.entity.AppUser;
+import com.web.store.app.backend.entity.Token;
+import com.web.store.app.backend.model.TokenType;
+import com.web.store.app.backend.model.UserRole;
+import com.web.store.app.backend.repository.sql.CustomerRepository;
+import com.web.store.app.backend.repository.sql.TokenRepository;
+import com.web.store.app.backend.security.JwtService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final UserRepository repository;
+    private final CustomerRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -40,16 +40,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
+        var customer = AppUser.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword())).role(UserRole.USER)
                 .build();
 
-        repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        saveUserToken(user, jwtToken);
+        repository.save(customer);
+        var jwtToken = jwtService.generateToken(customer);
+        saveCustomerToken(customer, jwtToken);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
@@ -57,24 +57,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        var jwtToken = jwtService.generateToken(user);
-        deleteAllValidTokensByUser(user);
-        saveUserToken(user, jwtToken);
+        var customer = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("AppUser not found"));
+        var jwtToken = jwtService.generateToken(customer);
+        deleteAllValidTokensByCustomer(customer);
+        saveCustomerToken(customer, jwtToken);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
-    private void deleteAllValidTokensByUser(User user) {
-        var validTokens = tokenRepository.findAllTokensByUser(user.getId());
+    private void deleteAllValidTokensByCustomer(AppUser customers) {
+        var validTokens = tokenRepository.findAllTokensByUser(customers.getId());
 
         if (validTokens.isEmpty()) return;
 
         tokenRepository.deleteTokensByTokenIn(validTokens.stream().map(Token::getToken).toList());
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    private void saveCustomerToken(AppUser customers, String jwtToken) {
         var token = Token.builder()
-                .user(user)
+                .user(customers)
                 .tokenType(TokenType.BEARER)
                 .token(jwtToken)
                 .build();

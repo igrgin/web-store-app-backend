@@ -1,6 +1,6 @@
 package com.web.store.app.backend.security.config;
 
-import com.web.store.app.backend.repository.sql.UserRepository;
+import com.web.store.app.backend.repository.sql.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,12 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> customerRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("AppUser not found"));
     }
 
     @Bean

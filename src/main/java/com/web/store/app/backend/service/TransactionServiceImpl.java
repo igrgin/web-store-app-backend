@@ -1,8 +1,8 @@
 package com.web.store.app.backend.service;
 
+import com.web.store.app.backend.dto.TransactionDTO;
 import com.web.store.app.backend.entity.Transaction;
 import com.web.store.app.backend.repository.elastic.TransactionRepository;
-import com.web.store.app.backend.dto.TransactionDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     private TransactionRepository transactionRepository;
 
-    public Optional<List<TransactionDTO>> findUserTransactions(Integer userId) {
-        return Optional.of(transactionRepository.findTransactionByUserId(userId).stream()
+    public Optional<List<TransactionDTO>> findUserTransactions(Long userId) {
+        return Optional.of(transactionRepository.findTransactionsByUserId(userId).stream()
                 .map(TransactionServiceImpl::mapToTransactionDTO).toList());
+    }
+
+    public Optional<TransactionDTO> saveTransaction(TransactionDTO transactionDTO) {
+        return Optional.of(mapToTransactionDTO(transactionRepository.save(mapToTransaction(transactionDTO))));
     }
 
     private static Transaction mapToTransaction(TransactionDTO transactionDTO) {
