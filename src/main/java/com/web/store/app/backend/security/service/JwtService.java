@@ -12,12 +12,17 @@ public interface JwtService {
 
     String extractUsername(String token);
 
-    String generateToken(Map<String, Object> extraClaims, UserDetails userDetails);
+    String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, Long expiration);
 
-    String generateToken(UserDetails userDetails);
+    String generateAccessToken(UserDetails userDetails);
+
+    String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails);
+
+    String generateRefreshToken(UserDetails userDetails);
+
+    String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails);
 
     Boolean isTokenValid(String token, UserDetails userDetails);
-
 
     <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
 

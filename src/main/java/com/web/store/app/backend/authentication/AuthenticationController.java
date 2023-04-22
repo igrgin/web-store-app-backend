@@ -4,6 +4,8 @@ import com.web.store.app.backend.authentication.dto.AuthenticationRequest;
 import com.web.store.app.backend.authentication.dto.AuthenticationResponse;
 import com.web.store.app.backend.authentication.dto.RegisterRequest;
 import com.web.store.app.backend.authentication.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,8 +36,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    private ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid AuthenticationRequest request) {
+    private ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
         return ResponseEntity.of(Optional.ofNullable(authenticationService.authenticate(request)));
+    }
+
+    @PostMapping("/refresh")
+    private void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+         authenticationService.refreshToken(request,response);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

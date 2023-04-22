@@ -9,9 +9,9 @@ public class JwtConfigPropertiesProvider {
 
     private final JwtConfigProperties configProperties;
 
-    public String getSecretKey()
+    public JwtConfigProperties.Config getConfig()
     {
-        return configProperties.config().secretKey();
+        return configProperties.config();
     }
 
 }

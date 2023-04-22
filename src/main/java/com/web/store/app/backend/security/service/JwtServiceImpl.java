@@ -20,21 +20,37 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    private JwtConfigPropertiesProvider propertiesProvider;
+    private JwtConfigPropertiesProvider jwtPropertiesProvider;
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    @Override
+    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, Long expiration) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new java.util.Date(System.currentTimeMillis() + 1000 * 14 * 24 * 60 * 60))
+                .setExpiration(new java.util.Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS512).compact();
     }
+    @Override
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateAccessToken(new HashMap<>(), userDetails);
+    }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    @Override
+    public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return buildToken(extraClaims, userDetails, jwtPropertiesProvider.getConfig().accessExpiration());
+    }
+    @Override
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateRefreshToken(new HashMap<>(), userDetails);
+    }
+
+    @Override
+    public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        System.out.println(jwtPropertiesProvider.getConfig().refreshExpiration());
+        return buildToken(extraClaims, userDetails, jwtPropertiesProvider.getConfig().refreshExpiration());
     }
 
     public Boolean isTokenValid(String token, UserDetails userDetails) {
@@ -65,7 +81,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Key getSignInKey() {
-        var keyBytes = Decoders.BASE64.decode(propertiesProvider.getSecretKey());
+        var keyBytes = Decoders.BASE64.decode(jwtPropertiesProvider.getConfig().secretKey());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

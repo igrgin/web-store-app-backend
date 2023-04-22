@@ -5,5 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(value = "spring.security.jwt")
 public record JwtConfigProperties(Config config) {
 
-    public record Config(String secretKey){}
+    public record Config(String secretKey, Long accessExpiration, Long refreshExpiration){}
 }
