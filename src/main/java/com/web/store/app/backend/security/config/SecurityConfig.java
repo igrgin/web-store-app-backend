@@ -1,5 +1,7 @@
 package com.web.store.app.backend.security.config;
 
+import com.web.store.app.backend.security.filter.JwtAuthenticationFilter;
+import com.web.store.app.backend.security.service.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
