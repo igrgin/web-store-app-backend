@@ -81,11 +81,12 @@ public class ProductServiceImpl implements ProductService {
 
     private static Product mapToProduct(ProductDTO productDTO) {
         return new Product(productDTO.id(), productDTO.brand(), productDTO.model(), productDTO.name(),
-                productDTO.price(), productDTO.category(), productDTO.stock(), productDTO.description());
+                productDTO.price(), productDTO.category(),productDTO.imageURL(),
+                productDTO.stock(), productDTO.description());
     }
 
     private static ProductDTO mapToProductDto(Product product) {
         return new ProductDTO(product.getId(), product.getBrand(), product.getModel(), product.getName(),
-                product.getPrice(), product.getCategory(), product.getStock(), product.getDescription());
+                product.getPrice(), product.getCategory(), product.getStock(), product.getDescription(), product.getImageURL());
     }
 }
