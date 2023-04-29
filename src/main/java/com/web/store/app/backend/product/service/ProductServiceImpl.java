@@ -20,10 +20,10 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
 
-    public Optional<PageableProductsDTO> searchProducts(String name, String category, Integer page, Integer size) {
+    public Optional<PageableProductsDTO> searchProducts(String name, String category, String brand, Integer page, Integer size) {
 
-        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategory(name,
-                        category, PageRequest.of(page,size)))
+        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategoryAndBrand(name.isBlank() ? null: name,
+                        category.isBlank() ? null: category, brand.isBlank() ? null: brand, PageRequest.of(page,size)))
                 .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 

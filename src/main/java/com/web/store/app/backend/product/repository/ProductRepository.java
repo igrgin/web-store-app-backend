@@ -20,8 +20,10 @@ public interface ProductRepository extends ElasticsearchRepository<Product, Stri
 
     Page<Product> findAllByBrand(String brand, @Nonnull Pageable pageable);
 
-    @Query("{\"bool\": {\"must\": [{\"regexp\": {\"name\": \".*?0.*\"}}, {\"match\": {\"category\": \"?1\"}}]}}")
-    Page<Product> findProductByNameIgnoreCaseAndCategory(String name, String category, Pageable pageable);
+    @Query("{\"bool\":{\"should\":[{\"term\":{\"name\":\"?0\"}},{\"term\":{\"category\":\"?1\"}},{\"term\":{\"brand\":\"?2\"}}]}}")
+    Page<Product> findProductByNameIgnoreCaseAndCategoryAndBrand(String name, String category, String brand,
+                                                                         Pageable pageable);
+
 
     void deleteByIdIn(List<String> ids);
 

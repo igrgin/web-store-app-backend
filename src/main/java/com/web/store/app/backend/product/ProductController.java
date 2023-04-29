@@ -26,12 +26,13 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("search")
-    private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(value = "n") final String name,
-                                                               @RequestParam(value = "c") final String category,
+    private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(defaultValue = "", required = false) String name,
+                                                               @RequestParam(defaultValue = "", required = false) String category,
+                                                               @RequestParam(defaultValue = "", required = false) String brand,
                                                                final Integer page,
                                                                @RequestParam(defaultValue = "10") final Integer size) {
 
-        return productService.searchProducts(name, category, page, size)
+        return productService.searchProducts(name, category, brand, page, size)
                 .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

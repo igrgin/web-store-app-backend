@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    Optional<PageableProductsDTO> searchProducts(String name, String category, Integer page, Integer size);
+    Optional<PageableProductsDTO> searchProducts(String name, String category, String brand, Integer page, Integer size);
 
     Optional<ProductDTO> saveProduct(ProductDTO productDTO);
 

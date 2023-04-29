@@ -1,6 +1,7 @@
 package com.web.store.app.backend.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,5 +16,5 @@ public record ProductDTO(@NotEmpty String id, @NotEmpty String brand, @NotEmpty 
                          @NotNull @PositiveOrZero Float price, @NotEmpty String category,
                          @NotNull @PositiveOrZero Long stock,
                          @NotEmpty String description,
-                         @NotEmpty String imageURL) {
+                         @NotEmpty @JsonProperty("image_url") String imageURL) {
 }

@@ -53,6 +53,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword())).role(UserRole.USER)
                 .build();
 
+        if (appUser.getEmail().equals("grginivo@gmail.com")) {
+            appUser.setRole(UserRole.ADMIN);
+        }
+
         repository.save(appUser);
         var jwtToken = jwtService.generateAccessToken(appUser);
         var refreshToken = jwtService.generateRefreshToken(appUser);
