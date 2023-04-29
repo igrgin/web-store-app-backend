@@ -1,7 +1,7 @@
 package com.web.store.app.backend.product;
 
-import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
+import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -106,9 +105,9 @@ public class ProductController {
                                 .build());
     }
 
-    @DeleteMapping("delete")
-    private ResponseEntity<Void> deleteProductsById(@RequestBody final List<String> ids) {
-        productService.deleteProductsById(ids);
+    @DeleteMapping("delete/{id}")
+    private ResponseEntity<Void> deleteProductById(@PathVariable final String id) {
+        productService.deleteProductById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

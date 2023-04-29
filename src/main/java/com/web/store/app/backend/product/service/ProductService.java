@@ -1,9 +1,8 @@
 package com.web.store.app.backend.product.service;
 
-import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
+import com.web.store.app.backend.product.dto.ProductDTO;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
@@ -19,8 +18,7 @@ public interface ProductService {
 
     Optional<PageableProductsDTO> findByBrand(String brand, Integer page, Integer size);
 
-    void deleteProductsById(List<String> ids);
-
+    void deleteProductById(String id);
 
     Optional<ProductDTO> updateById(ProductDTO productDTO);
 

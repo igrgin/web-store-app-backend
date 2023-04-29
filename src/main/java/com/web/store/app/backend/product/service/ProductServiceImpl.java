@@ -1,8 +1,8 @@
 package com.web.store.app.backend.product.service;
 
 import com.web.store.app.backend.product.document.Product;
-import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
+import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,10 +61,9 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
-    public void deleteProductsById(List<String> ids) {
-        productRepository.deleteByIdIn(ids);
+    public void deleteProductById(String id) {
+        productRepository.deleteById(id);
     }
-
 
     public Optional<ProductDTO> updateById(ProductDTO productDTO) {
 
