@@ -1,22 +1,23 @@
 package com.web.store.app.backend.product.service;
 
 import com.web.store.app.backend.product.dto.ProductDTO;
+import com.web.store.app.backend.product.dto.PageableProductsDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    Optional<List<ProductDTO>> searchProducts(String name, String category);
+    Optional<PageableProductsDTO> searchProducts(String name, String category, Integer page, Integer size);
 
     Optional<ProductDTO> saveProduct(ProductDTO productDTO);
 
-    Optional<List<ProductDTO>> findAll();
+    Optional<PageableProductsDTO> findAll(Integer page, Integer size);
 
     Optional<ProductDTO> findById(String id);
 
-    Optional<List<ProductDTO>> findByCategory(String category);
+    Optional<PageableProductsDTO> findByCategory(String category, Integer page, Integer size);
 
-    Optional<List<ProductDTO>> findByBrand(String brand);
+    Optional<PageableProductsDTO> findByBrand(String brand, Integer page, Integer size);
 
     void deleteProductsById(List<String> ids);
 

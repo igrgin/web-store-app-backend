@@ -2,9 +2,12 @@ package com.web.store.app.backend.product.service;
 
 import com.web.store.app.backend.product.document.Product;
 import com.web.store.app.backend.product.dto.ProductDTO;
+import com.web.store.app.backend.product.dto.PageableProductsDTO;
 import com.web.store.app.backend.product.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +20,11 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
 
-    public Optional<List<ProductDTO>> searchProducts(String name, String category) {
+    public Optional<PageableProductsDTO> searchProducts(String name, String category, Integer page, Integer size) {
 
-        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategory(name, category)
-                .stream().map(ProductServiceImpl::mapToProductDto).toList());
+        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategory(name,
+                        category, PageRequest.of(page,size)))
+                .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
     public Optional<ProductDTO> saveProduct(ProductDTO productDTO) {
@@ -35,30 +39,27 @@ public class ProductServiceImpl implements ProductService {
         return Optional.of(mapToProductDto(productRepository.save(mapToProduct(productDTO))));
     }
 
-    public Optional<List<ProductDTO>> findAll() {
+    public Optional<PageableProductsDTO> findAll(Integer page, Integer size) {
 
-        return Optional.of(productRepository
-                .findAll().stream()
-                .map(ProductServiceImpl::mapToProductDto)
-                .toList());
+        return Optional.of(productRepository.findAll(PageRequest.of(page, size)))
+                .map(ProductServiceImpl::mapToProductWrapperDTO);
+
     }
 
     public Optional<ProductDTO> findById(String id) {
         return productRepository.findById(id).map(ProductServiceImpl::mapToProductDto);
     }
 
-    public Optional<List<ProductDTO>> findByCategory(String category) {
+    public Optional<PageableProductsDTO> findByCategory(String category, Integer page, Integer size) {
         return Optional.of(productRepository
-                .findAllByCategory(category).stream()
-                .map(ProductServiceImpl::mapToProductDto)
-                .toList());
+                .findAllByCategory(category, PageRequest.of(page, size)))
+                .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
-    public Optional<List<ProductDTO>> findByBrand(String brand) {
+    public Optional<PageableProductsDTO> findByBrand(String brand, Integer page, Integer size) {
         return Optional.of(productRepository
-                .findAllByBrand(brand).stream()
-                .map(ProductServiceImpl::mapToProductDto)
-                .toList());
+                .findAllByBrand(brand, PageRequest.of(page, size)))
+                .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
     public void deleteProductsById(List<String> ids) {
@@ -80,13 +81,20 @@ public class ProductServiceImpl implements ProductService {
 
 
     private static Product mapToProduct(ProductDTO productDTO) {
-        return new Product(productDTO.id(), productDTO.brand(), productDTO.model(), productDTO.name(),
+        return new Product(productDTO.id(), productDTO.brand(), productDTO.name(),
                 productDTO.price(), productDTO.category(),productDTO.imageURL(),
                 productDTO.stock(), productDTO.description());
     }
 
     private static ProductDTO mapToProductDto(Product product) {
-        return new ProductDTO(product.getId(), product.getBrand(), product.getModel(), product.getName(),
-                product.getPrice(), product.getCategory(), product.getStock(), product.getDescription(), product.getImageURL());
+        return new ProductDTO(product.getId(), product.getBrand(), product.getName(),
+                product.getPrice(), product.getCategory(), product.getStock(), product.getDescription(),
+                product.getImageURL());
+    }
+
+    private static PageableProductsDTO mapToProductWrapperDTO(Page<Product> products) {
+
+        var productsToSend = products.stream().map(ProductServiceImpl::mapToProductDto).toList();
+        return new PageableProductsDTO(productsToSend, products.getTotalPages());
     }
 }

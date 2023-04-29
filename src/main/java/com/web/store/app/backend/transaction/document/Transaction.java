@@ -25,11 +25,11 @@ public class Transaction {
     @Id
     @Field(type = FieldType.Keyword)
     private String id;
-    @Field(type = FieldType.Long)
+    @Field(type = FieldType.Long, name = "user_ids")
     private Long userId;
-    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    @Field(type = FieldType.Date, format = DateFormat.date_time, name = "created_at")
     @PastOrPresent(message = "Date must be in the past or present")
     private ZonedDateTime createdAt;
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Keyword, name = "product_ids")
     private List<String> productIds;
 }

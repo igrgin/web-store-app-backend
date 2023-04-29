@@ -1,6 +1,7 @@
 package com.web.store.app.backend.product;
 
 import com.web.store.app.backend.product.dto.ProductDTO;
+import com.web.store.app.backend.product.dto.PageableProductsDTO;
 import com.web.store.app.backend.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,19 +26,22 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("search")
-    private ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam(value = "n") String name,
-                                                            @RequestParam(value = "c") String category) {
+    private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(value = "n") final String name,
+                                                               @RequestParam(value = "c") final String category,
+                                                               final Integer page,
+                                                               @RequestParam(defaultValue = "10") final Integer size) {
 
-        return productService.searchProducts(name, category).map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
-                .orElseGet(() -> ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .build());
+        return productService.searchProducts(name, category, page, size)
+                .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @GetMapping("find/all")
-    private ResponseEntity<List<ProductDTO>> getAllProducts() {
+    private ResponseEntity<PageableProductsDTO> getAllProducts(final Integer page,
+                                                               @RequestParam(defaultValue = "10") final Integer size) {
 
-        return productService.findAll().map(products1 -> ResponseEntity.status(HttpStatus.OK).body(products1))
+        return productService.findAll(page, size).map(products1 -> ResponseEntity
+                        .status(HttpStatus.OK).body(products1))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .build());
@@ -45,7 +49,7 @@ public class ProductController {
     }
 
     @GetMapping("find/{id}")
-    private ResponseEntity<ProductDTO> getProductById(@PathVariable String id) {
+    private ResponseEntity<ProductDTO> getProductById(@PathVariable final String id) {
 
         return productService.findById(id).map(
                 productDto1 -> ResponseEntity.status(HttpStatus.OK).body(productDto1)).orElseGet(
@@ -56,9 +60,10 @@ public class ProductController {
     }
 
     @GetMapping("find/category/{category}")
-    private ResponseEntity<List<ProductDTO>> getAllProductsByCategory(@PathVariable String category) {
+    private ResponseEntity<PageableProductsDTO> getAllProductsByCategory(@PathVariable final String category, final Integer page,
+                                                                         @RequestParam(defaultValue = "10") final Integer size) {
 
-        return productService.findByCategory(category).map(products1 -> ResponseEntity.status(HttpStatus.OK)
+        return productService.findByCategory(category, page, size).map(products1 -> ResponseEntity.status(HttpStatus.OK)
                         .body(products1))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
@@ -67,9 +72,10 @@ public class ProductController {
     }
 
     @GetMapping("find/brand/{brand}")
-    private ResponseEntity<List<ProductDTO>> getAllProductsByBrand(@PathVariable String brand) {
+    private ResponseEntity<PageableProductsDTO> getAllProductsByBrand(@PathVariable final String brand, final Integer page,
+                                                                      @RequestParam(defaultValue = "10") final Integer size) {
 
-        return productService.findByBrand(brand).map(products1 -> ResponseEntity.status(HttpStatus.OK).body(products1))
+        return productService.findByBrand(brand, page, size).map(products1 -> ResponseEntity.status(HttpStatus.OK).body(products1))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .build());
@@ -77,7 +83,7 @@ public class ProductController {
     }
 
     @PostMapping("add")
-    private ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody ProductDTO productDto) {
+    private ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody final ProductDTO productDto) {
 
         return productService.saveProduct(productDto).map(
                 productDto1 -> ResponseEntity.status(HttpStatus.CREATED).body(productDto1)).orElseGet(
@@ -87,7 +93,7 @@ public class ProductController {
     }
 
     @PutMapping("update")
-    private ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody ProductDTO productDTO) {
+    private ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody final ProductDTO productDTO) {
 
         return productService.updateById(productDTO).map(
                         productDto1 -> ResponseEntity
@@ -100,7 +106,7 @@ public class ProductController {
     }
 
     @DeleteMapping("delete")
-    private ResponseEntity<Void> deleteProductsById(@RequestBody List<String> ids) {
+    private ResponseEntity<Void> deleteProductsById(@RequestBody final List<String> ids) {
         productService.deleteProductsById(ids);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -29,9 +29,6 @@ public class Product {
     private String brand;
     @NotEmpty
     @Field(type = FieldType.Keyword)
-    private String model;
-    @NotEmpty
-    @Field(type = FieldType.Keyword)
     private String name;
     @NotNull
     @PositiveOrZero
@@ -40,7 +37,7 @@ public class Product {
     @NotEmpty
     @Field(type = FieldType.Keyword)
     private String category;
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Keyword, name = "image_url")
     private String imageURL;
     @NotNull
     @PositiveOrZero

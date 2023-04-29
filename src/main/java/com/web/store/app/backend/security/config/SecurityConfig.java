@@ -29,8 +29,9 @@ class SecurityConfig {
 
 
         http.csrf().disable().authorizeHttpRequests().requestMatchers("/auth/api/**").permitAll()
-                .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .and().authorizeHttpRequests().requestMatchers("/kibana-dashboard/api/**").hasRole("ADMIN")
+                .anyRequest().authenticated().
+                and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout().logoutUrl("/auth/api/logout").addLogoutHandler(logoutService)

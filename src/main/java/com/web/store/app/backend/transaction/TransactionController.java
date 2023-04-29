@@ -1,5 +1,6 @@
 package com.web.store.app.backend.transaction;
 
+import com.web.store.app.backend.transaction.dto.PageableTransactionsDTO;
 import com.web.store.app.backend.transaction.dto.TransactionDTO;
 import com.web.store.app.backend.transaction.service.TransactionService;
 import jakarta.validation.Valid;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,9 +25,11 @@ public class TransactionController {
     public final TransactionService transactionService;
 
     @GetMapping("find/user/{userId}")
-    private ResponseEntity<List<TransactionDTO>> getAllTransactionsByUserId(@PathVariable Long userId) {
+    private ResponseEntity<PageableTransactionsDTO> getAllTransactionsByUserId(@PathVariable Long userId, final Integer page,
+                                                                               @RequestParam(defaultValue = "10") final Integer size) {
 
-        return transactionService.findUserTransactions(userId).map(transactions -> ResponseEntity.status(HttpStatus.OK)
+        return transactionService.findUserTransactions(userId, page, size)
+                .map(transactions -> ResponseEntity.status(HttpStatus.OK)
                         .body(transactions))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
