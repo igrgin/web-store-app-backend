@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
+import java.util.List;
+
 
 public interface ProductRepository extends ElasticsearchRepository<Product, String> {
 
@@ -18,9 +20,9 @@ public interface ProductRepository extends ElasticsearchRepository<Product, Stri
 
     Page<Product> findAllByBrand(String brand, @Nonnull Pageable pageable);
 
-    @Query("{\"bool\":{\"should\":[{\"term\":{\"name\":\"?0\"}},{\"term\":{\"category\":\"?1\"}},{\"term\":{\"brand\":\"?2\"}}]}}")
-    Page<Product> findProductByNameIgnoreCaseAndCategoryAndBrand(String name, String category, String brand,
-                                                                         Pageable pageable);
+    @Query("{\"bool\":{\"should\":[{\"wildcard\":{\"name\":\"*?0*\"}},{\"term\":{\"category\":\"?1\"}},{\"terms\":{\"brand\": ?2}},{\"range\":{\"price\":{\"gte\":?3,\"lte\":?4}}}]}}")
+    Page<Product> findProductByNameIgnoreCaseAndCategoryAndBrandIn(String name, String category, List<String> brands,
+                                                                   Integer priceMin, Integer priceMax, Pageable pageable);
     Boolean existsProductById(String id);
 
 

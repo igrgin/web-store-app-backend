@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,10 +20,10 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
 
-    public Optional<PageableProductsDTO> searchProducts(String name, String category, String brand, Integer page, Integer size) {
+    public Optional<PageableProductsDTO> searchProducts(String name, String category, List<String> brands, Integer page, Integer size, Integer priceMin, Integer priceMax) {
 
-        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategoryAndBrand(name.isBlank() ? null: name,
-                        category.isBlank() ? null: category, brand.isBlank() ? null: brand, PageRequest.of(page,size)))
+        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategoryAndBrandIn(name.isBlank() ? null: name,
+                        category.isBlank() ? null: category, brands.isEmpty() ? null: brands, priceMin, priceMax, PageRequest.of(page,size)))
                 .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 

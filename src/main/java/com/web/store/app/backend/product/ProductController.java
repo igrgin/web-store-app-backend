@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,11 +28,13 @@ public class ProductController {
     @GetMapping("search")
     private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(defaultValue = "", required = false) String name,
                                                                @RequestParam(defaultValue = "", required = false) String category,
-                                                               @RequestParam(defaultValue = "", required = false) String brand,
-                                                               final Integer page,
-                                                               @RequestParam(defaultValue = "10") final Integer size) {
+                                                               @RequestParam(defaultValue = "", required = false) String brands,
+                                                               @RequestParam(defaultValue = "") final Integer page,
+                                                               @RequestParam(defaultValue = "10") final Integer size,
+                                                               @RequestParam(defaultValue = "", required = false) final Integer pMin,
+                                                               @RequestParam(defaultValue = "", required = false) final Integer pMax) {
 
-        return productService.searchProducts(name, category, brand, page, size)
+        return productService.searchProducts(name, category, Arrays.stream(brands.split(",")).toList(), page, size, pMin, pMax)
                 .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

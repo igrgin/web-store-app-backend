@@ -28,8 +28,8 @@ class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 
-        http.csrf().disable().authorizeHttpRequests().requestMatchers("/auth/api/**").permitAll()
-                .and().authorizeHttpRequests().requestMatchers("/kibana-dashboard/api/**").hasRole("ADMIN")
+        http.csrf().disable().authorizeHttpRequests()
+                .requestMatchers("/auth/api/**").permitAll()
                 .anyRequest().authenticated().
                 and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authenticationProvider(authenticationProvider)
