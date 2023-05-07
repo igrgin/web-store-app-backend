@@ -22,9 +22,10 @@ public class ProductServiceImpl implements ProductService {
 
     public Optional<PageableProductsDTO> searchProducts(String name, String category, List<String> brands, Integer page, Integer size, Integer priceMin, Integer priceMax) {
 
-        return Optional.of(productRepository.findProductByNameIgnoreCaseAndCategoryAndBrandIn(name.isBlank() ? null: name,
-                        category.isBlank() ? null: category, brands.isEmpty() ? null: brands, priceMin, priceMax, PageRequest.of(page,size)))
-                .map(ProductServiceImpl::mapToProductWrapperDTO);
+        return brands.isEmpty() ? Optional.of(productRepository.productSearchWithoutBrand(name,category,priceMin,priceMax, PageRequest.of(page,size)))
+                .map(ProductServiceImpl::mapToProductWrapperDTO):
+                Optional.of(productRepository.productSearchWithBrand(name,category,brands,priceMin,priceMax,
+                                PageRequest.of(page,size))).map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
     public Optional<ProductDTO> saveProduct(ProductDTO productDTO) {

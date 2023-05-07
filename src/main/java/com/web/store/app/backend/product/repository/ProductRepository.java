@@ -20,9 +20,12 @@ public interface ProductRepository extends ElasticsearchRepository<Product, Stri
 
     Page<Product> findAllByBrand(String brand, @Nonnull Pageable pageable);
 
-    @Query("{\"bool\":{\"should\":[{\"wildcard\":{\"name\":\"*?0*\"}},{\"term\":{\"category\":\"?1\"}},{\"terms\":{\"brand\": ?2}},{\"range\":{\"price\":{\"gte\":?3,\"lte\":?4}}}]}}")
-    Page<Product> findProductByNameIgnoreCaseAndCategoryAndBrandIn(String name, String category, List<String> brands,
-                                                                   Integer priceMin, Integer priceMax, Pageable pageable);
+    @Query("{\"bool\":{\"filter\":[{\"term\":{\"category\":\"?1\"}},{\"terms\":{\"brand\": ?2}},{\"range\":{\"price\":{\"gte\":?3,\"lte\":?4}}}],\"must\":[{\"wildcard\":{\"name\":\"*?0*\"}}]}}")
+    Page<Product> productSearchWithBrand(String name, String category, List<String> brands,
+                                         Integer priceMin, Integer priceMax, Pageable pageable);
+    @Query("{\"bool\":{\"filter\":[{\"term\":{\"category\":\"?1\"}},{\"range\":{\"price\":{\"gte\":?2,\"lte\":?3}}}],\"must\":[{\"wildcard\":{\"name\":\"*?0*\"}}]}}")
+    Page<Product> productSearchWithoutBrand(String name, String category,
+                                            Integer priceMin, Integer priceMax, Pageable pageable);
     Boolean existsProductById(String id);
 
 

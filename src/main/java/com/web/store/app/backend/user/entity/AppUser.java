@@ -1,7 +1,8 @@
-package com.web.store.app.backend.authentication.entity;
+package com.web.store.app.backend.user.entity;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.web.store.app.backend.authentication.entity.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

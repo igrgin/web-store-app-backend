@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    private JwtConfigPropertiesProvider jwtPropertiesProvider;
+    private final JwtConfigPropertiesProvider jwtPropertiesProvider;
 
 
     public String extractUsername(String token) {
@@ -49,13 +49,12 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        System.out.println(jwtPropertiesProvider.getConfig().refreshExpiration());
         return buildToken(extraClaims, userDetails, jwtPropertiesProvider.getConfig().refreshExpiration());
     }
 
     public Boolean isTokenValid(String token, UserDetails userDetails) {
-        final var username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        final var userEmail = extractUsername(token);
+        return userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

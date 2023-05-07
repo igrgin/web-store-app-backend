@@ -18,12 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/api")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
 public class AuthenticationController {
 
@@ -31,18 +29,23 @@ public class AuthenticationController {
     private Map<String, String> errors;
 
     @PostMapping("/register")
-    private ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest request) {
-        return ResponseEntity.of(Optional.ofNullable(authenticationService.register(request)));
+    private ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request) {
+        authenticationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 
     @PostMapping("/authenticate")
     private ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
-        return ResponseEntity.of(Optional.ofNullable(authenticationService.authenticate(request)));
+        return authenticationService.authenticate(request).map(authenticationResponse ->
+                        ResponseEntity.status(HttpStatus.OK).body(authenticationResponse))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping("/refresh")
-    private void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
          authenticationService.refreshToken(request,response);
+         return ResponseEntity.ok().build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/transaction/api")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
 public class TransactionController {
     

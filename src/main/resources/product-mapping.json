@@ -1,0 +1,38 @@
+{
+  "product": {
+    "mappings": {
+      "properties": {
+        "_class": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": false
+        },
+        "brand": {
+          "type": "keyword"
+        },
+        "category": {
+          "type": "keyword"
+        },
+        "description": {
+          "type": "text",
+          "analyzer": "english"
+        },
+        "id": {
+          "type": "keyword"
+        },
+        "image_url": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "keyword"
+        },
+        "price": {
+          "type": "float"
+        },
+        "stock": {
+          "type": "long"
+        }
+      }
+    }
+  }
+}

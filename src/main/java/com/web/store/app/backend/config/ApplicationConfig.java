@@ -1,6 +1,6 @@
 package com.web.store.app.backend.config;
 
-import com.web.store.app.backend.authentication.repository.AppUserRepository;
+import com.web.store.app.backend.user.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
@@ -21,7 +23,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> appUserRepository.findByEmail(username)
+        return username -> Optional.of(appUserRepository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException("AppUser not found"));
     }
 

@@ -14,27 +14,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/product/api/")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
 public class ProductController {
 
     private ProductService productService;
 
     @GetMapping("search")
-    private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(defaultValue = "", required = false) String name,
-                                                               @RequestParam(defaultValue = "", required = false) String category,
-                                                               @RequestParam(defaultValue = "", required = false) String brands,
-                                                               @RequestParam(defaultValue = "") final Integer page,
-                                                               @RequestParam(defaultValue = "10") final Integer size,
-                                                               @RequestParam(defaultValue = "", required = false) final Integer pMin,
-                                                               @RequestParam(defaultValue = "", required = false) final Integer pMax) {
+    private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(required = false,name = "name") String name,
+                                                               @RequestParam(required = false, name = "category") String category,
+                                                               @RequestParam(required = false, name = "brands") String brands,
+                                                               @RequestParam(defaultValue = "0", name="page") final Integer page,
+                                                               @RequestParam(defaultValue = "10", name="size") final Integer size,
+                                                               @RequestParam(defaultValue = "0", required = false, name = "pMin") final Integer priceMin,
+                                                               @RequestParam(defaultValue = "80", required = false, name = "pMax") final Integer priceMax) {
 
-        return productService.searchProducts(name, category, Arrays.stream(brands.split(",")).toList(), page, size, pMin, pMax)
+        return productService.searchProducts(name, category, brands == null || brands.isEmpty()? List.of() : Arrays.stream(brands.split(",")).toList(), page, size, priceMin, priceMax)
                 .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
