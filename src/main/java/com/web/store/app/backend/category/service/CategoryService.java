@@ -12,7 +12,9 @@ public interface CategoryService {
     void deleteById(Integer id);
 
     Optional<CategoryDTO> findById(Integer id);
+    List<CategoryDTO> findAllByParentId(Integer id);
 
     Optional<List<CategoryDTO>> findAll();
 
+    List<CategoryDTO> findAllByParentIdIsNull();
 }

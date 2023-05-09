@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/category/api/")
@@ -32,11 +33,31 @@ public class CategoryController {
 
     }
 
-    @GetMapping("find/{id}")
+    @GetMapping("find/category/{id}")
     private ResponseEntity<CategoryDTO> getCategoriesById(@PathVariable Integer id) {
 
         return categoryService.findById(id)
                 .map(categoryDTO -> ResponseEntity.status(HttpStatus.OK).body(categoryDTO))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .build());
+
+    }
+
+    @GetMapping("find/subcategory/{parentId}")
+    private ResponseEntity<List<CategoryDTO>> getAllCategoriesByParentId(@PathVariable Integer parentId) {
+
+        return Optional.of(categoryService.findAllByParentId(parentId))
+                .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .build());
+
+    }
+
+    @GetMapping("find/top")
+    private ResponseEntity<List<CategoryDTO>> getAllMainCategories() {
+
+        return Optional.of(categoryService.findAllByParentIdIsNull())
+                .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .build());
 
