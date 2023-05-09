@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/product/api/")
+@RequestMapping("/product/api")
 @AllArgsConstructor
 @Slf4j
 public class ProductController {
 
     private ProductService productService;
 
-    @GetMapping("search")
+    @GetMapping("/search")
     private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(required = false,name = "name") String name,
                                                                @RequestParam(required = false, name = "category") String category,
                                                                @RequestParam(required = false, name = "brands") String brands,
@@ -39,7 +39,7 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @GetMapping("find/all")
+    @GetMapping("/find/all")
     private ResponseEntity<PageableProductsDTO> getAllProducts(final Integer page,
                                                                @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -51,7 +51,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("find/{id}")
+    @GetMapping("/find/{id}")
     private ResponseEntity<ProductDTO> getProductById(@PathVariable final String id) {
 
         return productService.findById(id).map(
@@ -62,7 +62,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("find/category/{category}")
+    @GetMapping("/find/category/{category}")
     private ResponseEntity<PageableProductsDTO> getAllProductsByCategory(@PathVariable final String category, final Integer page,
                                                                          @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -74,7 +74,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("find/brand/{brand}")
+    @GetMapping("/find/brand/{brand}")
     private ResponseEntity<PageableProductsDTO> getAllProductsByBrand(@PathVariable final String brand, final Integer page,
                                                                       @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -85,7 +85,7 @@ public class ProductController {
 
     }
 
-    @PostMapping("add")
+    @PostMapping("/add")
     private ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody final ProductDTO productDto) {
 
         return productService.saveProduct(productDto).map(
@@ -95,7 +95,7 @@ public class ProductController {
                         .build());
     }
 
-    @PutMapping("update")
+    @PutMapping("/update")
     private ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody final ProductDTO productDTO) {
 
         return productService.updateById(productDTO).map(
@@ -108,7 +108,7 @@ public class ProductController {
                                 .build());
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     private ResponseEntity<Void> deleteProductById(@PathVariable final String id) {
         productService.deleteProductById(id);
         return ResponseEntity.status(HttpStatus.OK).build();

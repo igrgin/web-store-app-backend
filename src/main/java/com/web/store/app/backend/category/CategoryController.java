@@ -16,14 +16,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/category/api/")
+@RequestMapping("/category/api")
 @AllArgsConstructor
 public class CategoryController {
 
     private CategoryService categoryService;
     private Map<String, String> errors;
 
-    @GetMapping("find/all")
+    @GetMapping("/find/all")
     private ResponseEntity<List<CategoryDTO>> getAllCategories() {
 
         return categoryService.findAll().map(categoryDTOS -> ResponseEntity.status(HttpStatus.OK).body(categoryDTOS))
@@ -33,7 +33,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping("find/category/{id}")
+    @GetMapping("/find/category/{id}")
     private ResponseEntity<CategoryDTO> getCategoriesById(@PathVariable Integer id) {
 
         return categoryService.findById(id)
@@ -43,7 +43,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping("find/subcategory/{parentId}")
+    @GetMapping("/find/subcategory/{parentId}")
     private ResponseEntity<List<CategoryDTO>> getAllCategoriesByParentId(@PathVariable Integer parentId) {
 
         return Optional.of(categoryService.findAllByParentId(parentId))
@@ -53,7 +53,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping("find/top")
+    @GetMapping("/find/top")
     private ResponseEntity<List<CategoryDTO>> getAllMainCategories() {
 
         return Optional.of(categoryService.findAllByParentIdIsNull())
@@ -63,7 +63,7 @@ public class CategoryController {
 
     }
 
-    @PostMapping("add")
+    @PostMapping("/add")
     private ResponseEntity<CategoryDTO> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
 
         return categoryService.save(categoryDTO)
@@ -72,7 +72,7 @@ public class CategoryController {
                         .build());
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     private ResponseEntity<Void> deleteCategoriesById(@PathVariable Integer id) {
         categoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();

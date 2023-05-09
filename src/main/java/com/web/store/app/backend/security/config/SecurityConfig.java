@@ -30,16 +30,17 @@ class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf().disable().authorizeHttpRequests()
-                .requestMatchers("/auth/api/**").permitAll()
+                .requestMatchers("/auth/api/**","/product/api/search"
+                        ,"/category/api/find/subcategory/**","/category/api/find/top").permitAll()
                 .anyRequest().authenticated().
-                and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authenticationProvider(authenticationProvider)
+                and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)).and()
                 .logout().logoutUrl("/auth/api/logout").addLogoutHandler(logoutService)
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 
                 http.cors();
+                http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 
         return http.build();
     }

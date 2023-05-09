@@ -23,7 +23,7 @@ public class TransactionController {
     
     public final TransactionService transactionService;
 
-    @GetMapping("find/user/{userId}")
+    @GetMapping("/find/user/{userId}")
     private ResponseEntity<PageableTransactionsDTO> getAllTransactionsByUserId(@PathVariable Long userId, final Integer page,
                                                                                @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -36,7 +36,7 @@ public class TransactionController {
 
     }
 
-    @PostMapping(value = "add")
+    @PostMapping(value = "/add")
     private ResponseEntity<TransactionDTO> saveTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
 
         return transactionService.saveTransaction(transactionDTO).map(
