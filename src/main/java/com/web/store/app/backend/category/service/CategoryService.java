@@ -14,6 +14,8 @@ public interface CategoryService {
     Optional<CategoryDTO> findById(Integer id);
     List<CategoryDTO> findAllByParentId(Integer id);
 
+    List<CategoryDTO> findAllByParentCategoryName(String parentCategoryName);
+
     Optional<List<CategoryDTO>> findAll();
 
     List<CategoryDTO> findAllByParentIdIsNull();

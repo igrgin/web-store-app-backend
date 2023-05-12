@@ -34,10 +34,20 @@ public class CategoryController {
     }
 
     @GetMapping("/find/category/{id}")
-    private ResponseEntity<CategoryDTO> getCategoriesById(@PathVariable Integer id) {
+    private ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer id) {
 
         return categoryService.findById(id)
                 .map(categoryDTO -> ResponseEntity.status(HttpStatus.OK).body(categoryDTO))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .build());
+
+    }
+
+    @GetMapping("/find/category/{categoryName}")
+    private ResponseEntity<List<CategoryDTO>> getCategoriesByName(@PathVariable String categoryName) {
+
+        return Optional.of(categoryService.findAllByParentCategoryName(categoryName))
+                .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .build());
 

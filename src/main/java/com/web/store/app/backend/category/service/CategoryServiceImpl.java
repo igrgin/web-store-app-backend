@@ -16,46 +16,63 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 
     private CategoryRepository categoryRepository;
+
     @Override
     public Optional<CategoryDTO> save(CategoryDTO categoryDTO) {
 
         return Optional.of(mapToCategoryDto(categoryRepository.save(mapToCategory(categoryDTO))));
     }
+
     @Override
     public void deleteById(Integer id) {
         categoryRepository.deleteById(id);
     }
+
     @Override
     public Optional<CategoryDTO> findById(Integer id) {
 
         return categoryRepository.findById(id)
-                .map(CategoryServiceImpl::mapToCategoryDto);
+                .map(this::mapToCategoryDto);
     }
 
     @Override
     public List<CategoryDTO> findAllByParentId(Integer parentId) {
-        return categoryRepository.findAllByParentId(parentId).stream()
-                .map(CategoryServiceImpl::mapToCategoryDto).toList();
+        return categoryRepository.findAllByParentCategory_id(parentId).stream()
+                .map(this::mapToCategoryDto).toList();
     }
+
+    @Override
+    public List<CategoryDTO> findAllByParentCategoryName(String parentCategoryName) {
+        return categoryRepository.findAllByParentCategory_Name(parentCategoryName).stream()
+                .map(this::mapToCategoryDto).toList();
+    }
+
     @Override
     public Optional<List<CategoryDTO>> findAll() {
 
         return Optional.of(categoryRepository.findAll().stream()
-                .map(CategoryServiceImpl::mapToCategoryDto).toList());
+                .map(this::mapToCategoryDto).toList());
     }
 
     @Override
     public List<CategoryDTO> findAllByParentIdIsNull() {
-        return categoryRepository.findAllByParentIdIsNull().stream()
-                .map(CategoryServiceImpl::mapToCategoryDto).toList();
+        return categoryRepository.findTopLevelCategories().stream()
+                .map(this::mapToCategoryDto).toList();
     }
 
-    private static Category mapToCategory(CategoryDTO categoryDTO) {
-        return new Category(categoryDTO.id(), categoryDTO.name(), categoryDTO.parentId());
+    private Category mapToCategory(CategoryDTO categoryDTO) {
+        Category parentCategory = null;
+        Optional<Category> getParentCategory = Optional.empty();
+        if (categoryDTO.parentCategory() != null)
+            getParentCategory = Optional.ofNullable(categoryRepository.findByName(categoryDTO.parentCategory()));
+        if (getParentCategory.isPresent()) {
+            parentCategory = getParentCategory.get();
+        }
+        return Category.builder().id(categoryDTO.id()).name(categoryDTO.name()).parentCategory(parentCategory).build();
     }
 
-    private static CategoryDTO mapToCategoryDto(Category category) {
-        return new CategoryDTO(category.getId(), category.getName(), category.getParentId());
+    private CategoryDTO mapToCategoryDto(Category category) {
+        return new CategoryDTO(category.getId(), category.getName(), category.getParentCategory() == null ? null: category.getParentCategory().getName());
     }
 
 }

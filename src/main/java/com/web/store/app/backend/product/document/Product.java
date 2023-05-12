@@ -34,6 +34,8 @@ public class Product {
     @NotEmpty
     @Field(type = FieldType.Keyword)
     private String category;
+    @Field(type = FieldType.Keyword)
+    private String subcategory;
     @Field(type = FieldType.Keyword, name = "image_url")
     private String imageURL;
     @NotNull

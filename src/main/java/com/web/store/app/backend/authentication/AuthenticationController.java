@@ -1,8 +1,8 @@
 package com.web.store.app.backend.authentication;
 
-import com.web.store.app.backend.authentication.dto.AuthenticationRequest;
-import com.web.store.app.backend.authentication.dto.AuthenticationResponse;
-import com.web.store.app.backend.authentication.dto.RegisterRequest;
+import com.web.store.app.backend.authentication.model.AuthenticationRequest;
+import com.web.store.app.backend.authentication.model.AuthenticationResponse;
+import com.web.store.app.backend.authentication.model.RegisterRequest;
 import com.web.store.app.backend.authentication.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

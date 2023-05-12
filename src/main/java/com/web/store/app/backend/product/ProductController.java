@@ -12,10 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/product/api")
@@ -27,14 +24,16 @@ public class ProductController {
 
     @GetMapping("/search")
     private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(required = false,name = "name") String name,
-                                                               @RequestParam(required = false, name = "category") String category,
-                                                               @RequestParam(required = false, name = "brands") String brands,
-                                                               @RequestParam(defaultValue = "0", name="page") final Integer page,
-                                                               @RequestParam(defaultValue = "10", name="size") final Integer size,
-                                                               @RequestParam(defaultValue = "0", required = false, name = "pMin") final Integer priceMin,
-                                                               @RequestParam(defaultValue = "80", required = false, name = "pMax") final Integer priceMax) {
+                                                               @RequestParam(required = false,name = "category") String category,
+                                                               @RequestParam(required = false,name = "subcategory") String subcategory,
+                                                               @RequestParam(required = false,name = "brands") String brands,
+                                                               @RequestParam(required = false, name = "pMin") final Integer priceMin,
+                                                               @RequestParam(required = false, name = "pMax") final Integer priceMax,
+                                                               @RequestParam(required = false, name="page") final Integer page,
+                                                               @RequestParam(required = false, name="size") final Integer size) {
 
-        return productService.searchProducts(name, category, brands == null || brands.isEmpty()? List.of() : Arrays.stream(brands.split(",")).toList(), page, size, priceMin, priceMax)
+        return Optional.of(productService.searchProducts(name, category, subcategory, brands,
+                        page, size, priceMin, priceMax))
                 .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
@@ -51,7 +50,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("/find/{id}")
+    @GetMapping("/find/id/{id}")
     private ResponseEntity<ProductDTO> getProductById(@PathVariable final String id) {
 
         return productService.findById(id).map(
