@@ -30,8 +30,8 @@ class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf().disable().authorizeHttpRequests()
-                .requestMatchers("/auth/api/**","/product/api/search","/product/api/find/id/**"
-                        , "/category/api/find/subcategory/**", "/category/api/find/top","/brand/api/**").permitAll()
+                .requestMatchers("/auth/api/**","/product/api/public/**", "/category/api/public/**",
+                       "/transaction/api/public/**", "/brand/api/public/**").permitAll()
                 .anyRequest().authenticated().
                 and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authenticationProvider(authenticationProvider)

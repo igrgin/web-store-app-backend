@@ -16,6 +16,7 @@ public interface ProductService {
     Optional<ProductDTO> findById(String id);
 
     Optional<PageableProductsDTO> findByCategory(String category, Integer page, Integer size);
+    Optional<PageableProductsDTO> findBySubcategory(String subcategory, Integer page, Integer size);
 
     Optional<PageableProductsDTO> findByBrand(String brand, Integer page, Integer size);
 

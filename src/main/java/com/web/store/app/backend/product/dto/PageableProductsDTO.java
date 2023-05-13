@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PageableProductsDTO {
+public final class PageableProductsDTO {
     private List<ProductDTO> products;
     private Integer NumberOfPages;
 

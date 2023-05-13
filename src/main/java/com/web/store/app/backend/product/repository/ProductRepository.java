@@ -14,6 +14,7 @@ public interface ProductRepository extends ElasticsearchRepository<Product, Stri
     Page<Product> findAll(@Nonnull Pageable pageable);
 
     Page<Product> findAllByCategory(String category,@Nonnull Pageable pageable);
+    Page<Product> findAllBySubcategory(String subcategory,@Nonnull Pageable pageable);
 
     Page<Product> findAllByBrand(String brand, @Nonnull Pageable pageable);
     Boolean existsProductById(String id);

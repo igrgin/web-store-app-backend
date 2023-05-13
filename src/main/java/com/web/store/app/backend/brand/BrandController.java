@@ -20,9 +20,8 @@ import java.util.Optional;
 public class BrandController {
 
     private BrandService brandService;
-    private Map<String, String> errors;
 
-    @GetMapping("/find/{id}")
+    @GetMapping("/public/find/{id}")
     private ResponseEntity<BrandDTO> getBrandsById(@PathVariable Integer id) {
 
         return brandService.findById(id)
@@ -32,7 +31,7 @@ public class BrandController {
 
     }
 
-    @GetMapping("/find/category/{categoryId}")
+    @GetMapping("/public/find/subcategory/{categoryId}")
     private ResponseEntity<List<BrandDTO>> getBrandByCategoryId(@PathVariable("categoryId") Integer categoryId) {
 
         return Optional.of(brandService.findAllByCategoryId(categoryId))
@@ -41,7 +40,7 @@ public class BrandController {
                         .build());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/private/delete/{id}")
     private ResponseEntity<Void> deleteBrandsById(@PathVariable Integer id) {
         brandService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -51,7 +50,7 @@ public class BrandController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private Map<String, String> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
-        errors = new HashMap<>();
+        var errors = new HashMap<String,String>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
@@ -64,7 +63,7 @@ public class BrandController {
     @ExceptionHandler(Exception.class)
     private Map<String, String> handleExceptions(
             Exception ex) {
-        errors = new HashMap<>();
+        var errors = new HashMap<String,String>();
         String fieldName = ex.getClass().getSimpleName();
         String errorMessage = ex.getMessage();
         errors.put(fieldName, errorMessage);

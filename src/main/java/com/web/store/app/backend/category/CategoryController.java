@@ -21,59 +21,58 @@ import java.util.Optional;
 public class CategoryController {
 
     private CategoryService categoryService;
-    private Map<String, String> errors;
 
-    @GetMapping("/find/all")
+    @GetMapping("/private/find/all")
     private ResponseEntity<List<CategoryDTO>> getAllCategories() {
 
         return categoryService.findAll().map(categoryDTOS -> ResponseEntity.status(HttpStatus.OK).body(categoryDTOS))
                 .orElseGet(() -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.NOT_FOUND)
                         .build());
 
     }
 
-    @GetMapping("/find/category/{id}")
+    @GetMapping("/public/find/category/{id}")
     private ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer id) {
 
         return categoryService.findById(id)
                 .map(categoryDTO -> ResponseEntity.status(HttpStatus.OK).body(categoryDTO))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .build());
 
     }
 
-    @GetMapping("/find/category/{categoryName}")
+    @GetMapping("/public/find/subcategory/name/{categoryName}")
     private ResponseEntity<List<CategoryDTO>> getCategoriesByName(@PathVariable String categoryName) {
 
         return Optional.of(categoryService.findAllByParentCategoryName(categoryName))
                 .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .build());
 
     }
 
-    @GetMapping("/find/subcategory/{parentId}")
+    @GetMapping("/public/find/subcategory/id/{parentId}")
     private ResponseEntity<List<CategoryDTO>> getAllCategoriesByParentId(@PathVariable Integer parentId) {
 
         return Optional.of(categoryService.findAllByParentId(parentId))
                 .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .build());
 
     }
 
-    @GetMapping("/find/top")
+    @GetMapping("/public/find/top")
     private ResponseEntity<List<CategoryDTO>> getAllMainCategories() {
 
         return Optional.of(categoryService.findAllByParentIdIsNull())
                 .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .build());
 
     }
 
-    @PostMapping("/add")
+    @PostMapping("/private/add")
     private ResponseEntity<CategoryDTO> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
 
         return categoryService.save(categoryDTO)
@@ -82,7 +81,7 @@ public class CategoryController {
                         .build());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/private/delete/{id}")
     private ResponseEntity<Void> deleteCategoriesById(@PathVariable Integer id) {
         categoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -92,7 +91,7 @@ public class CategoryController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private Map<String, String> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
-        errors = new HashMap<>();
+        var errors = new HashMap<String,String>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
@@ -105,7 +104,7 @@ public class CategoryController {
     @ExceptionHandler(Exception.class)
     private Map<String, String> handleExceptions(
             Exception ex) {
-        errors = new HashMap<>();
+        var errors = new HashMap<String,String>();
         String fieldName = ex.getClass().getSimpleName();
         String errorMessage = ex.getMessage();
         errors.put(fieldName, errorMessage);

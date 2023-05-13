@@ -6,11 +6,12 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 public record UserProfileDTO(
-        @Column(name = "first_name") String firstName,
-
-
+        Long id,
+        @Column(name = "first_name")
+        String firstName,
         @Column(name = "last_name")
         String lastName,
         @Enumerated(EnumType.STRING)
-        UserRole role, String email) {
+        UserRole role,
+        String email) {
 }

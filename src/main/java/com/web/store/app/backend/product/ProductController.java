@@ -22,7 +22,7 @@ public class ProductController {
 
     private ProductService productService;
 
-    @GetMapping("/search")
+    @GetMapping("/public/search")
     private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(required = false,name = "name") String name,
                                                                @RequestParam(required = false,name = "category") String category,
                                                                @RequestParam(required = false,name = "subcategory") String subcategory,
@@ -38,7 +38,7 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @GetMapping("/find/all")
+    @GetMapping("/private/find/all")
     private ResponseEntity<PageableProductsDTO> getAllProducts(final Integer page,
                                                                @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -50,7 +50,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("/find/id/{id}")
+    @GetMapping("/private/find/id/{id}")
     private ResponseEntity<ProductDTO> getProductById(@PathVariable final String id) {
 
         return productService.findById(id).map(
@@ -61,7 +61,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("/find/category/{category}")
+    @GetMapping("/private/find/category/{category}")
     private ResponseEntity<PageableProductsDTO> getAllProductsByCategory(@PathVariable final String category, final Integer page,
                                                                          @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -72,8 +72,19 @@ public class ProductController {
                         .build());
 
     }
+    @GetMapping("/private/find/subcategory/{subcategory}")
+    private ResponseEntity<PageableProductsDTO> getAllProductsBySubcategory(@PathVariable final String subcategory, final Integer page,
+                                                                         @RequestParam(defaultValue = "10") final Integer size) {
 
-    @GetMapping("/find/brand/{brand}")
+        return productService.findBySubcategory(subcategory, page, size).map(products1 -> ResponseEntity.status(HttpStatus.OK)
+                        .body(products1))
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .build());
+
+    }
+
+    @GetMapping("/private/find/brand/{brand}")
     private ResponseEntity<PageableProductsDTO> getAllProductsByBrand(@PathVariable final String brand, final Integer page,
                                                                       @RequestParam(defaultValue = "10") final Integer size) {
 
@@ -84,7 +95,7 @@ public class ProductController {
 
     }
 
-    @PostMapping("/add")
+    @PostMapping("/private/add")
     private ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody final ProductDTO productDto) {
 
         return productService.saveProduct(productDto).map(
@@ -94,7 +105,7 @@ public class ProductController {
                         .build());
     }
 
-    @PutMapping("/update")
+    @PutMapping("/private/update")
     private ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody final ProductDTO productDTO) {
 
         return productService.updateById(productDTO).map(
@@ -107,7 +118,7 @@ public class ProductController {
                                 .build());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/private/delete/{id}")
     private ResponseEntity<Void> deleteProductById(@PathVariable final String id) {
         productService.deleteProductById(id);
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -17,7 +17,6 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -65,9 +64,6 @@ public class ProductServiceImpl implements ProductService {
         nativeQueryBuilder.withPageable(PageRequest.of(page, size));
         var searchQuery = new NativeQuery(nativeQueryBuilder);
         var productHits = Optional.of(elasticsearchTemplate.search(searchQuery, Product.class));
-        if (productHits.isEmpty()) {
-            return new PageableProductsDTO(List.of(), 0);
-        }
         var productDtos = productHits.get().stream().map(SearchHit::getContent)
                 .map(ProductServiceImpl::mapToProductDto).toList();
         return new PageableProductsDTO(productDtos, page);
@@ -99,6 +95,12 @@ public class ProductServiceImpl implements ProductService {
     public Optional<PageableProductsDTO> findByCategory(String category, Integer page, Integer size) {
         return Optional.of(productRepository
                         .findAllByCategory(category, PageRequest.of(page, size)))
+                .map(ProductServiceImpl::mapToProductWrapperDTO);
+    }
+
+    public Optional<PageableProductsDTO> findBySubcategory(String subcategory, Integer page, Integer size) {
+        return Optional.of(productRepository
+                        .findAllBySubcategory(subcategory, PageRequest.of(page, size)))
                 .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
