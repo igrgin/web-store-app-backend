@@ -98,7 +98,7 @@ public class ProductController {
     }
 
     @PostMapping("/private/add")
-    private ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody final ProductDTO productDto) {
+    private ResponseEntity<ProductDTO> addProduct(@RequestBody final ProductDTO productDto) {
 
         return productService.saveProduct(productDto).map(
                 productDto1 -> ResponseEntity.status(HttpStatus.CREATED).body(productDto1)).orElseGet(
@@ -108,7 +108,7 @@ public class ProductController {
     }
 
     @PutMapping("/private/update")
-    private ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody final ProductDTO productDTO) {
+    private ResponseEntity<ProductDTO> updateProduct(@RequestBody final ProductDTO productDTO) {
 
         return productService.updateById(productDTO).map(
                         productDto1 -> ResponseEntity

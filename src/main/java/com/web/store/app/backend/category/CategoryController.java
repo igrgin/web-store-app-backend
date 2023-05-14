@@ -73,7 +73,7 @@ public class CategoryController {
     }
 
     @PostMapping("/private/add")
-    private ResponseEntity<CategoryDTO> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+    private ResponseEntity<CategoryDTO> addCategory(@RequestBody CategoryDTO categoryDTO) {
 
         return categoryService.save(categoryDTO)
                 .map(categoryDTO1 -> ResponseEntity.status(HttpStatus.CREATED)

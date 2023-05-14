@@ -9,6 +9,6 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Builder
-public record ProductDTO(String id, String brand, String name, Float price, String category,String subcategory,
+public record ProductDTO(String id, String brand, String name, Float price, String category, String subcategory,
                          Long stock, String description, @JsonProperty("image_url") String imageURL) {
 }

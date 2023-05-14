@@ -37,7 +37,7 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/public/add")
-    private ResponseEntity<TransactionDTO> saveTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
+    private ResponseEntity<TransactionDTO> saveTransaction(@RequestBody TransactionDTO transactionDTO) {
 
         return transactionService.saveTransaction(transactionDTO).map(
                 transaction -> ResponseEntity.status(HttpStatus.CREATED).body(transaction)).orElseGet(
