@@ -6,8 +6,9 @@ import com.web.store.app.backend.product.dto.ProductDTO;
 import java.util.Optional;
 
 public interface ProductService {
-    PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands, Integer page,
-                                       Integer size, Integer priceMin, Integer priceMax);
+    PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands,
+                                       Integer page, Integer size, Integer priceMin, Integer priceMax,
+                                       Boolean searchDescription);
 
     Optional<ProductDTO> saveProduct(ProductDTO productDTO);
 

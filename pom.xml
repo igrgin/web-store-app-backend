@@ -21,7 +21,7 @@
         <jjwt-api.version>0.11.5</jjwt-api.version>
     </properties>
     <dependencies>
-        <!-- Spring -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

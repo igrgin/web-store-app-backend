@@ -30,10 +30,12 @@ public class ProductController {
                                                                @RequestParam(required = false, name = "pMin") final Integer priceMin,
                                                                @RequestParam(required = false, name = "pMax") final Integer priceMax,
                                                                @RequestParam(required = false, name="page") final Integer page,
-                                                               @RequestParam(required = false, name="size") final Integer size) {
+                                                               @RequestParam(required = false, name="size") final Integer size,
+                                                               @RequestParam(required = false, defaultValue = "0" ,name="searchDescription") final Integer searchDescription) {
+
 
         return Optional.of(productService.searchProducts(name, category, subcategory, brands,
-                        page, size, priceMin, priceMax))
+                        page, size, priceMin, priceMax, searchDescription == 1 ? Boolean.TRUE :searchDescription == 0 ? Boolean.FALSE: null))
                 .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

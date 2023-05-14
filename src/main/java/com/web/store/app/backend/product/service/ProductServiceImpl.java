@@ -29,7 +29,8 @@ public class ProductServiceImpl implements ProductService {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     public PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands,
-                                              Integer page, Integer size, Integer priceMin, Integer priceMax) {
+                                              Integer page, Integer size, Integer priceMin, Integer priceMax,
+                                              Boolean searchDescription) {
 
         var nativeQueryBuilder = new NativeQueryBuilder();
         nativeQueryBuilder.withQuery(builder -> {
@@ -50,14 +51,19 @@ public class ProductServiceImpl implements ProductService {
 
                         return filterBuilder;
                     });
+
+
                 }
                 if (name != null) {
                     boolBuilder.must(mustBuilder -> mustBuilder.wildcard(wildecardBuilder -> wildecardBuilder
-                            .field("name").value("*" + name + "*")));
+                            .field("name").value("*" + name + "*").caseInsensitive(true)));
                 }
 
                 return boolBuilder;
             });
+
+            if (searchDescription && name != null) builder.match(matchBuilder -> matchBuilder.field("description").query(name));
+
             return builder;
         });
 
