@@ -1,6 +1,8 @@
 package com.web.store.app.backend.product.service;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import co.elastic.clients.elasticsearch._types.aggregations.MaxAggregate;
 import co.elastic.clients.json.JsonData;
 import com.web.store.app.backend.product.document.Product;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
@@ -14,6 +16,7 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -31,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
     public PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands,
                                               Integer page, Integer size, Integer priceMin, Integer priceMax,
                                               Boolean searchDescription) {
-
+        
         var nativeQueryBuilder = new NativeQueryBuilder();
         nativeQueryBuilder.withQuery(builder -> {
             builder.bool(boolBuilder -> {
@@ -44,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
                         if (brands != null)
                             filterBuilder.terms(termsBuilder -> termsBuilder.field("brand")
                                     .terms(brandsBuilder -> brandsBuilder.value(Arrays.stream(brands.split(","))
-                                            .toList().stream().map(FieldValue::of).toList())));
+                                            .map(FieldValue::of).toList())));
                         if (priceMax != null && priceMin != null)
                             filterBuilder.range(rangeBuilder -> rangeBuilder.field("price")
                                     .gte(JsonData.of(priceMin)).lte(JsonData.of(priceMax)));
@@ -55,14 +58,16 @@ public class ProductServiceImpl implements ProductService {
 
                 }
                 if (name != null) {
-                    boolBuilder.must(mustBuilder -> mustBuilder.wildcard(wildecardBuilder -> wildecardBuilder
-                            .field("name").value("*" + name + "*").caseInsensitive(true)));
+                    if (!name.equals("undefined"))
+                        boolBuilder.must(mustBuilder -> mustBuilder.wildcard(wildecardBuilder -> wildecardBuilder
+                                .field("name").value("*" + name + "*").caseInsensitive(true)));
                 }
 
                 return boolBuilder;
             });
 
-            if (searchDescription && name != null) builder.match(matchBuilder -> matchBuilder.field("description").query(name));
+            if (searchDescription && name != null) builder.match(matchBuilder -> matchBuilder.field("description")
+            .query(name));
 
             return builder;
         });
@@ -72,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
         var productHits = Optional.of(elasticsearchTemplate.search(searchQuery, Product.class));
         var productDtos = productHits.get().stream().map(SearchHit::getContent)
                 .map(ProductServiceImpl::mapToProductDto).toList();
-        return new PageableProductsDTO(productDtos, page);
+        return new PageableProductsDTO(productDtos, (int) (Math.ceil(((double) (productHits.get().getTotalHits() / size)))));
     }
 
     public Optional<ProductDTO> saveProduct(ProductDTO productDTO) {

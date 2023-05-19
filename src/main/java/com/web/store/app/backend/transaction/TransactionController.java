@@ -3,7 +3,6 @@ package com.web.store.app.backend.transaction;
 import com.web.store.app.backend.transaction.dto.PageableTransactionsDTO;
 import com.web.store.app.backend.transaction.dto.TransactionDTO;
 import com.web.store.app.backend.transaction.service.TransactionService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
