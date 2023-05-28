@@ -3,7 +3,6 @@ package com.web.store.app.backend.product;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
 import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.service.ProductService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/product/api")
@@ -52,7 +53,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("/private/find/id/{id}")
+    @GetMapping("/public/find/id/{id}")
     private ResponseEntity<ProductDTO> getProductById(@PathVariable final String id) {
 
         return productService.findById(id).map(

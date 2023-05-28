@@ -31,10 +31,19 @@ public class BrandController {
 
     }
 
-    @GetMapping("/public/find/subcategory/{categoryId}")
+    @GetMapping("/public/find/subcategory/id/{categoryId}")
     private ResponseEntity<List<BrandDTO>> getBrandByCategoryId(@PathVariable("categoryId") Integer categoryId) {
 
         return Optional.of(brandService.findAllByCategoryId(categoryId))
+                .map(categoryDTOs -> ResponseEntity.status(HttpStatus.OK).body(categoryDTOs))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .build());
+    }
+
+    @GetMapping("/public/find/category/name/{categoryName}")
+    private ResponseEntity<List<BrandDTO>> getBrandByCategoryName(@PathVariable("categoryName") String categoryName) {
+
+        return Optional.of(brandService.findAllByParentCategoryName(categoryName))
                 .map(categoryDTOs -> ResponseEntity.status(HttpStatus.OK).body(categoryDTOs))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .build());

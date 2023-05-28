@@ -1,9 +1,5 @@
 package com.web.store.app.backend.product.service;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
-import co.elastic.clients.elasticsearch._types.aggregations.MaxAggregate;
-import co.elastic.clients.json.JsonData;
 import com.web.store.app.backend.product.document.Product;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
 import com.web.store.app.backend.product.dto.ProductDTO;
@@ -12,15 +8,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,55 +26,93 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    private final ElasticsearchTemplate elasticsearchTemplate;
+    private final ElasticsearchOperations operations;
 
     public PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands,
                                               Integer page, Integer size, Integer priceMin, Integer priceMax,
                                               Boolean searchDescription) {
-        
-        var nativeQueryBuilder = new NativeQueryBuilder();
-        nativeQueryBuilder.withQuery(builder -> {
-            builder.bool(boolBuilder -> {
-                if (category != null || subcategory != null || brands != null || (priceMax != null && priceMin != null)) {
-                    boolBuilder.filter(filterBuilder -> {
-                        if (category != null)
-                            filterBuilder.term(termBuilder -> termBuilder.field("category").value(category));
-                        if (category == null && subcategory != null)
-                            filterBuilder.term(termBuilder -> termBuilder.field("subcategory").value(subcategory));
-                        if (brands != null)
-                            filterBuilder.terms(termsBuilder -> termsBuilder.field("brand")
-                                    .terms(brandsBuilder -> brandsBuilder.value(Arrays.stream(brands.split(","))
-                                            .map(FieldValue::of).toList())));
-                        if (priceMax != null && priceMin != null)
-                            filterBuilder.range(rangeBuilder -> rangeBuilder.field("price")
-                                    .gte(JsonData.of(priceMin)).lte(JsonData.of(priceMax)));
-
-                        return filterBuilder;
-                    });
-
-
-                }
-                if (name != null) {
-                    if (!name.equals("undefined"))
-                        boolBuilder.must(mustBuilder -> mustBuilder.wildcard(wildecardBuilder -> wildecardBuilder
-                                .field("name").value("*" + name + "*").caseInsensitive(true)));
-                }
-
-                return boolBuilder;
-            });
-
-            if (searchDescription && name != null) builder.match(matchBuilder -> matchBuilder.field("description")
-            .query(name));
-
-            return builder;
-        });
-
-        nativeQueryBuilder.withPageable(PageRequest.of(page, size));
-        var searchQuery = new NativeQuery(nativeQueryBuilder);
-        var productHits = Optional.of(elasticsearchTemplate.search(searchQuery, Product.class));
-        var productDtos = productHits.get().stream().map(SearchHit::getContent)
+        var queryBuilder = buildQueryString(name, category, subcategory, brands, priceMin, priceMax);
+        var query = new StringQuery(queryBuilder.toString(), PageRequest.of(page, size));
+        SearchHits<Product> searchHits = operations.search(query, Product.class, IndexCoordinates.of("product"));
+        var productDtos = searchHits.stream().map(SearchHit::getContent)
                 .map(ProductServiceImpl::mapToProductDto).toList();
-        return new PageableProductsDTO(productDtos, (int) (Math.ceil(((double) (productHits.get().getTotalHits() / size)))));
+        return new PageableProductsDTO(productDtos, (long) (Math.ceil(((double) (searchHits.getTotalHits() / size)))), searchHits.getTotalHits());
+    }
+
+    private static StringBuilder buildQueryString(String name, String category, String subcategory, String brands, Integer priceMin, Integer priceMax) {
+        var isFirst = false;
+        var queryBuilder = new StringBuilder("""
+                {"bool": {
+                      "filter": [""");
+        if (category != null) {
+            isFirst = true;
+            queryBuilder.append("{\n" +
+                    "          \"term\": {\n" +
+                    "            \"category\": \"" + category + "\"\n" +
+                    "          }\n" +
+                    "        }");
+        }
+
+        if (subcategory != null) {
+            if (!isFirst) {
+                isFirst = true;
+            } else {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append("{\n" +
+                    "          \"term\": {\n" +
+                    "            \"subcategory\": \"" + subcategory + "\"\n" +
+                    "          }\n" +
+                    "        }");
+        }
+        if (priceMax != null && priceMin != null) {
+            if (!isFirst) {
+                isFirst = true;
+            } else {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append("{\n" +
+                    "          \"range\": {\n" +
+                    "            \"price\": {\n" +
+                    "              \"gte\":" + priceMin + ",\n" +
+                    "              \"lte\": " + priceMax + "\n" +
+                    "            }\n" +
+                    "          }\n" +
+                    "        }");
+        }
+        if (name != null) {
+            if (!isFirst) {
+                isFirst = true;
+            } else {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append("{\n" +
+                    "          \"wildcard\": {\n" +
+                    "            \"name\": {\n" +
+                    "              \"value\":\"*" + name + "*\",\n" +
+                    "              \"case_insensitive\":true\n" +
+                    "            }\n" +
+                    "          }\n" +
+                    "        }");
+        }
+        if (brands != null) {
+            if (isFirst) {
+                queryBuilder.append(",");
+            }
+            var brandsFilter = Arrays.stream(brands.split(","))
+                    .map(item -> "\"" + item + "\"")
+                    .collect(Collectors.joining(","));
+            queryBuilder.append("{\n" +
+                    "          \"terms\": {\n" +
+                    "            \"brand\": [" + brandsFilter + "]}\n" +
+                    "        }");
+        }
+        queryBuilder.append("""
+                ]
+                    }
+                  }
+                """);
+        return queryBuilder;
     }
 
     public Optional<ProductDTO> saveProduct(ProductDTO productDTO) {
@@ -153,6 +188,6 @@ public class ProductServiceImpl implements ProductService {
     private static PageableProductsDTO mapToProductWrapperDTO(Page<Product> products) {
 
         var productsToSend = products.stream().map(ProductServiceImpl::mapToProductDto).toList();
-        return new PageableProductsDTO(productsToSend, products.getTotalPages());
+        return new PageableProductsDTO(productsToSend, (long) (products.getTotalPages() + 1), products.getTotalElements());
     }
 }

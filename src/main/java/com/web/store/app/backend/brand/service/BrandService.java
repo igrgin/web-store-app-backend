@@ -13,7 +13,7 @@ public interface BrandService {
 
     Optional<BrandDTO> findById(Integer id);
 
-    List<BrandDTO> findAllByCategoryName(String categoryName);
+    List<BrandDTO> findAllByParentCategoryName(String categoryName);
 
     List<BrandDTO> findAllByCategoryId(Integer categoryId);
 }

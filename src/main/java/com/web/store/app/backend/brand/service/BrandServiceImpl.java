@@ -3,7 +3,6 @@ package com.web.store.app.backend.brand.service;
 import com.web.store.app.backend.brand.dto.BrandDTO;
 import com.web.store.app.backend.brand.entity.Brand;
 import com.web.store.app.backend.brand.repository.BrandRepository;
-import com.web.store.app.backend.category.entity.Category;
 import com.web.store.app.backend.category.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,14 +38,13 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<BrandDTO> findAllByCategoryName(String categoryName) {
-        return brandRepository.findAllByCategory_Name(categoryName).stream().map(this::mapToBrandDto).toList();
+    public List<BrandDTO> findAllByParentCategoryName(String categoryName) {
+        return brandRepository.findBrandsByCategory_Name(categoryName).stream().map(this::mapToBrandDto).toList();
     }
 
     @Override
     public List<BrandDTO> findAllByCategoryId(Integer categoryId) {
-        var categoryName = categoryRepository.findById(categoryId).map(Category::getName);
-        return categoryName.isEmpty() ? List.of() : findAllByCategoryName(categoryName.get());
+        return brandRepository.findAllByCategory_Id(categoryId).stream().map(this::mapToBrandDto).toList();
     }
 
     private Brand mapToBrand(BrandDTO brandDTO) {

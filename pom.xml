@@ -15,10 +15,10 @@
     <description>web-store-app-backend</description>
     <properties>
         <java.version>17</java.version>
-        <mysql-driver.version>8.0.32</mysql-driver.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <testcontainers.version>1.18.0</testcontainers.version>
         <jjwt-api.version>0.11.5</jjwt-api.version>
+        <mariadb-java-client.version>LATEST</mariadb-java-client.version>
     </properties>
     <dependencies>
         <!-- Spring Boot -->
@@ -45,10 +45,9 @@
 
         <!-- Database Drivers -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <scope>runtime</scope>
-            <version>${mysql-driver.version}</version>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${mariadb-java-client.version}</version>
         </dependency>
         <!-- tests -->
         <dependency>
