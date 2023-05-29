@@ -1,5 +1,6 @@
 package com.web.store.app.backend.user.service;
 
+import com.web.store.app.backend.security.service.JwtService;
 import com.web.store.app.backend.user.dto.UserProfileDTO;
 import com.web.store.app.backend.user.entity.AppUser;
 import com.web.store.app.backend.user.repository.AppUserRepository;
@@ -13,9 +14,18 @@ import java.util.Optional;
 public class AppUserServiceImpl implements AppUserService{
 
     private final AppUserRepository userRepository;
+
+    private final JwtService jwtService;
+
     @Override
     public Optional<AppUser> findByEmail(String email) {
         return Optional.of(userRepository.findByEmail(email));
+    }
+
+    @Override
+    public Optional<UserProfileDTO> findByJwtToUser(String authorizationHeader) {
+        final var userEmail = jwtService.extractUsername(authorizationHeader.substring(7));
+        return findByEmailToDTO(userEmail);
     }
 
     @Override

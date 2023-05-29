@@ -9,6 +9,8 @@ public interface AppUserService {
 
     Optional<AppUser> findByEmail(String email);
 
+    Optional<UserProfileDTO> findByJwtToUser(String email);
+
     Optional<UserProfileDTO> findByEmailToDTO(String email);
 
     void save(AppUser user);

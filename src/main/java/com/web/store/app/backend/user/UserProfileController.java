@@ -1,6 +1,6 @@
 package com.web.store.app.backend.user;
 
-import com.web.store.app.backend.security.service.JwtService;
+
 import com.web.store.app.backend.user.dto.UserProfileDTO;
 import com.web.store.app.backend.user.service.AppUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,13 +19,11 @@ public class UserProfileController {
 
     private final AppUserService userService;
 
-    private final JwtService jwtService;
 
     @GetMapping("/private/user")
     private ResponseEntity<UserProfileDTO> getUserByToken(HttpServletRequest request) {
-        final var userEmail = jwtService.extractUsername(request.getHeader(HttpHeaders.AUTHORIZATION)
-                .substring(7));
-        return userService.findByEmailToDTO(userEmail).map(user -> ResponseEntity.status(HttpStatus.OK)
+
+        return userService.findByJwtToUser(request.getHeader(HttpHeaders.AUTHORIZATION)).map(user -> ResponseEntity.status(HttpStatus.OK)
                         .body(user))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
