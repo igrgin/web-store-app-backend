@@ -29,8 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private final ElasticsearchOperations operations;
 
     public PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands,
-                                              Integer page, Integer size, Integer priceMin, Integer priceMax,
-                                              Boolean searchDescription) {
+                                              Integer page, Integer size, Integer priceMin, Integer priceMax) {
         var queryBuilder = buildQueryString(name, category, subcategory, brands, priceMin, priceMax);
         var query = new StringQuery(queryBuilder.toString(), PageRequest.of(page, size));
         SearchHits<Product> searchHits = operations.search(query, Product.class, IndexCoordinates.of("product"));
@@ -41,7 +40,11 @@ public class ProductServiceImpl implements ProductService {
 
     private static StringBuilder buildQueryString(String name, String category, String subcategory, String brands, Integer priceMin, Integer priceMax) {
         var isFirst = false;
-        var queryBuilder = new StringBuilder("""
+        var queryBuilder = new StringBuilder();
+
+        if (name != null)
+            queryBuilder.append("{\"bool\": { \"should\": [ {\"match\": { \"description\": \"" + name + "\"}}],  \"filter\": [");
+        else queryBuilder.append("""
                 {"bool": {
                       "filter": [""");
         if (category != null) {
@@ -138,9 +141,9 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id).map(ProductServiceImpl::mapToProductDto);
     }
 
-    public Optional<PageableProductsDTO> findByCategory(String category, Integer page, Integer size) {
+    public Optional<PageableProductsDTO> findByCategory(String category, Integer size) {
         return Optional.of(productRepository
-                        .findAllByCategory(category, PageRequest.of(page, size)))
+                        .findAllByCategory(category, PageRequest.ofSize(size)))
                 .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 

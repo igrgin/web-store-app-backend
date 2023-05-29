@@ -31,12 +31,11 @@ public class ProductController {
                                                                @RequestParam(required = false, name = "pMin") final Integer priceMin,
                                                                @RequestParam(required = false, name = "pMax") final Integer priceMax,
                                                                @RequestParam(required = false, name="page") final Integer page,
-                                                               @RequestParam(required = false, name="size") final Integer size,
-                                                               @RequestParam(required = false, defaultValue = "0" ,name="searchDescription") final Integer searchDescription) {
+                                                               @RequestParam(required = false, name="size") final Integer size) {
 
 
         return Optional.of(productService.searchProducts(name, category, subcategory, brands,
-                        page, size, priceMin, priceMax, searchDescription == 1 ? Boolean.TRUE :searchDescription == 0 ? Boolean.FALSE: null))
+                        page, size, priceMin, priceMax))
                 .map(productDTOS -> ResponseEntity.status(HttpStatus.OK).body(productDTOS))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
@@ -64,11 +63,11 @@ public class ProductController {
 
     }
 
-    @GetMapping("/private/find/category/{category}")
-    private ResponseEntity<PageableProductsDTO> getAllProductsByCategory(@PathVariable final String category, final Integer page,
-                                                                         @RequestParam(defaultValue = "10") final Integer size) {
+    @GetMapping("/public/find/category/{category}")
+    private ResponseEntity<PageableProductsDTO> getAllProductsByCategory(@PathVariable final String category,
+                                                                         @RequestParam(name="size") final Integer size) {
 
-        return productService.findByCategory(category, page, size).map(products1 -> ResponseEntity.status(HttpStatus.OK)
+        return productService.findByCategory(category,size).map(products1 -> ResponseEntity.status(HttpStatus.OK)
                         .body(products1))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
