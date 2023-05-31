@@ -9,7 +9,7 @@ import com.web.store.app.backend.authentication.entity.TokenType;
 import com.web.store.app.backend.authentication.repository.TokenRepository;
 import com.web.store.app.backend.security.service.JwtService;
 import com.web.store.app.backend.user.entity.AppUser;
-import com.web.store.app.backend.user.entity.UserRole;
+import com.web.store.app.backend.user.entity.Role;
 import com.web.store.app.backend.user.service.AppUserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,11 +41,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword())).role(UserRole.USER)
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
 
         if (appUser.getEmail().equals("grginivo@gmail.com")) {
-            appUser.setRole(UserRole.ADMIN);
+            appUser.setRole(Role.ADMIN);
         }
 
         userService.save(appUser);
