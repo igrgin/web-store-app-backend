@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface TransactionService {
 
-    Optional<PageableTransactionsDTO> findUserTransactions(Long userId, Integer page,Integer size);
+    Optional<PageableTransactionsDTO> findUserTransactions(String authorizationHeader, Integer page,Integer size);
 
-    Optional<TransactionDTO> saveTransaction(TransactionDTO transactionDTO);
+    Optional<TransactionDTO> saveTransaction(String authorizationHeader, TransactionDTO transactionDTO);
 }

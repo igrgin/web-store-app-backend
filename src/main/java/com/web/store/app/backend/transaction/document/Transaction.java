@@ -2,6 +2,10 @@ package com.web.store.app.backend.transaction.document;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.web.store.app.backend.transaction.dto.CartProduct;
+import com.web.store.app.backend.transaction.model.TransactionStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
@@ -25,11 +29,16 @@ public class Transaction {
     @Id
     @Field(type = FieldType.Keyword)
     private String id;
-    @Field(type = FieldType.Long, name = "user_ids")
+    @Field(type = FieldType.Long, name = "user_id")
     private Long userId;
     @Field(type = FieldType.Date, format = DateFormat.date_time, name = "created_at")
     @PastOrPresent(message = "Date must be in the past or present")
     private ZonedDateTime createdAt;
-    @Field(type = FieldType.Keyword, name = "product_ids")
-    private List<String> productIds;
+    @Field(type = FieldType.Nested, name = "cart")
+    private List<CartProduct> cart;
+    @Enumerated(EnumType.STRING)
+    @Field(type = FieldType.Keyword, name = "status")
+    private TransactionStatus status;
+    @Field(type = FieldType.Float, name = "price")
+    private Float price;
 }

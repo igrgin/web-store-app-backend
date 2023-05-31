@@ -3,8 +3,10 @@ package com.web.store.app.backend.transaction;
 import com.web.store.app.backend.transaction.dto.PageableTransactionsDTO;
 import com.web.store.app.backend.transaction.dto.TransactionDTO;
 import com.web.store.app.backend.transaction.service.TransactionService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -22,11 +24,12 @@ public class TransactionController {
     
     public final TransactionService transactionService;
 
-    @GetMapping("/public/find/user/{userId}")
-    private ResponseEntity<PageableTransactionsDTO> getAllTransactionsByUserId(@PathVariable Long userId, final Integer page,
-                                                                               @RequestParam(defaultValue = "10") final Integer size) {
+    @GetMapping("/private/find/all")
+    private ResponseEntity<PageableTransactionsDTO> getAllTransactionsForUser(final Integer page,
+                                                                               @RequestParam(defaultValue = "10") final Integer size,
+                                                                              final HttpServletRequest request) {
 
-        return transactionService.findUserTransactions(userId, page, size)
+        return transactionService.findUserTransactions(request.getHeader(HttpHeaders.AUTHORIZATION),page, size)
                 .map(transactions -> ResponseEntity.status(HttpStatus.OK)
                         .body(transactions))
                 .orElseGet(() -> ResponseEntity
@@ -38,7 +41,17 @@ public class TransactionController {
     @PostMapping(value = "/public/add")
     private ResponseEntity<TransactionDTO> saveTransaction(@RequestBody TransactionDTO transactionDTO) {
 
-        return transactionService.saveTransaction(transactionDTO).map(
+        return transactionService.saveTransaction(null,transactionDTO).map(
+                transaction -> ResponseEntity.status(HttpStatus.CREATED).body(transaction)).orElseGet(
+                () -> ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build());
+    }
+    @PostMapping(value = "/private/add")
+    private ResponseEntity<TransactionDTO> saveTransaction(@RequestBody TransactionDTO transactionDTO,
+                                                           final HttpServletRequest request) {
+
+        return transactionService.saveTransaction(request.getHeader(HttpHeaders.AUTHORIZATION),transactionDTO).map(
                 transaction -> ResponseEntity.status(HttpStatus.CREATED).body(transaction)).orElseGet(
                 () -> ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
