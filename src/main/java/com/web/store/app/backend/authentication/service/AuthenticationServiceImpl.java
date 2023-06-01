@@ -45,10 +45,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .role(Role.USER)
                 .build();
 
-        if (appUser.getEmail().equals("grginivo@gmail.com")) {
-            appUser.setRole(Role.ADMIN);
-        }
-
         userService.save(appUser);
     }
 
