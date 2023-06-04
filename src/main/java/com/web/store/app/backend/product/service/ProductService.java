@@ -18,10 +18,12 @@ public interface ProductService {
     Optional<PageableProductsDTO> findByCategory(String category, Integer size);
     Optional<PageableProductsDTO> findBySubcategory(String subcategory, Integer page, Integer size);
 
-    Optional<PageableProductsDTO> findByBrand(String brand, Integer page, Integer size);
+    PageableProductsDTO findByBrand(String brand, Integer page, Integer size);
 
     void deleteProductById(String id);
 
     Optional<ProductDTO> updateById(ProductDTO productDTO);
+
+    void changeStock(String id, int quantity);
 
 }

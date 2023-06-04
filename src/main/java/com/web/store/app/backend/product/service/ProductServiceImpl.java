@@ -4,20 +4,22 @@ import com.web.store.app.backend.product.document.Product;
 import com.web.store.app.backend.product.dto.PageableProductsDTO;
 import com.web.store.app.backend.product.dto.ProductDTO;
 import com.web.store.app.backend.product.repository.ProductRepository;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.StringQuery;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -118,6 +120,18 @@ public class ProductServiceImpl implements ProductService {
         return queryBuilder;
     }
 
+    public void changeStock(String id, int quantity)
+    {
+        var updateQuery = UpdateQuery.builder(id)
+                .withScriptType(ScriptType.INLINE)
+                .withScript("ctx._source.stock -= params.quantity")
+                .withParams(Collections.singletonMap("quantity", quantity))
+                .build();
+
+        // Execute the update operation
+        operations.update(updateQuery, IndexCoordinates.of("product"));
+    }
+
     public Optional<ProductDTO> saveProduct(ProductDTO productDTO) {
 
         var doesExist = productRepository.existsProductById(productDTO.id());
@@ -153,10 +167,8 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductServiceImpl::mapToProductWrapperDTO);
     }
 
-    public Optional<PageableProductsDTO> findByBrand(String brand, Integer page, Integer size) {
-        return Optional.of(productRepository
-                        .findAllByBrand(brand, PageRequest.of(page, size)))
-                .map(ProductServiceImpl::mapToProductWrapperDTO);
+    public PageableProductsDTO findByBrand(String brand, Integer page, Integer size) {
+        return mapToProductWrapperDTO(productRepository.findAllByBrand(brand, PageRequest.of(page, size)));
     }
 
     public void deleteProductById(String id) {

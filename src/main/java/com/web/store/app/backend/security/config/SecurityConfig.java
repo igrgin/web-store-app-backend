@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 class SecurityConfig {
 
@@ -31,7 +33,8 @@ class SecurityConfig {
 
         http.csrf().disable().authorizeHttpRequests()
                 .requestMatchers("/auth/api/**","/product/api/public/**", "/category/api/public/**",
-                       "/transaction/api/public/**", "/brand/api/public/**").permitAll()
+                       "/payment/api/public/**", "/brand/api/public/**").permitAll()
+                .requestMatchers("/chart/api/private/**").hasRole("ADMIN")
                 .anyRequest().authenticated().
                 and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authenticationProvider(authenticationProvider)

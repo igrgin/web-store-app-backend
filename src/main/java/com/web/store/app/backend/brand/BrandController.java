@@ -25,7 +25,17 @@ public class BrandController {
     private ResponseEntity<BrandDTO> getBrandsById(@PathVariable Integer id) {
 
         return brandService.findById(id)
-                .map(categoryDTO -> ResponseEntity.status(HttpStatus.OK).body(categoryDTO))
+                .map(brandDTO -> ResponseEntity.status(HttpStatus.OK).body(brandDTO))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .build());
+
+    }
+
+    @GetMapping("/public/find/all")
+    private ResponseEntity<List<BrandDTO>> getBrands() {
+
+        return Optional.of(brandService.findAllBrands())
+                .map(brandDTO -> ResponseEntity.status(HttpStatus.OK).body(brandDTO))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .build());
 
@@ -35,7 +45,7 @@ public class BrandController {
     private ResponseEntity<List<BrandDTO>> getBrandByCategoryId(@PathVariable("categoryId") Integer categoryId) {
 
         return Optional.of(brandService.findAllByCategoryId(categoryId))
-                .map(categoryDTOs -> ResponseEntity.status(HttpStatus.OK).body(categoryDTOs))
+                .map(brandDTO -> ResponseEntity.status(HttpStatus.OK).body(brandDTO))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .build());
     }
@@ -44,7 +54,7 @@ public class BrandController {
     private ResponseEntity<List<BrandDTO>> getBrandByCategoryName(@PathVariable("categoryName") String categoryName) {
 
         return Optional.of(brandService.findAllByParentCategoryName(categoryName))
-                .map(categoryDTOs -> ResponseEntity.status(HttpStatus.OK).body(categoryDTOs))
+                .map(brandDTO -> ResponseEntity.status(HttpStatus.OK).body(brandDTO))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .build());
     }

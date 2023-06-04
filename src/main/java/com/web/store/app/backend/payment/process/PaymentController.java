@@ -1,9 +1,15 @@
-package com.web.store.app.backend.transaction;
+package com.web.store.app.backend.payment.process;
 
-import com.web.store.app.backend.transaction.dto.PageableTransactionsDTO;
-import com.web.store.app.backend.transaction.dto.TransactionDTO;
-import com.web.store.app.backend.transaction.service.TransactionService;
+import com.web.store.app.backend.payment.process.cart.dto.CartProductDto;
+import com.web.store.app.backend.payment.process.cart.service.CartProductService;
+import com.web.store.app.backend.payment.process.transaction.dto.PageableTransactionsDTO;
+import com.web.store.app.backend.payment.process.transaction.dto.TransactionDTO;
+import com.web.store.app.backend.payment.process.transaction.service.TransactionService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -11,22 +17,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/transaction/api")
+@RequestMapping("/payment/api")
 @AllArgsConstructor
 @Slf4j
-public class TransactionController {
+public class PaymentController {
     
     public final TransactionService transactionService;
+    public final CartProductService cartProductService;
 
-    @GetMapping("/private/find/all")
+    @GetMapping("/private/transaction/find/all")
     private ResponseEntity<PageableTransactionsDTO> getAllTransactionsForUser(final Integer page,
-                                                                               @RequestParam(defaultValue = "10") final Integer size,
+                                                                              @RequestParam(defaultValue = "10") final Integer size,
                                                                               final HttpServletRequest request) {
 
         return transactionService.findUserTransactions(request.getHeader(HttpHeaders.AUTHORIZATION),page, size)
@@ -38,7 +50,18 @@ public class TransactionController {
 
     }
 
-    @PostMapping(value = "/public/add")
+    @GetMapping("/private/cart/find/{cartId}")
+    private ResponseEntity<List<CartProductDto>> getAllCartProductsForUser(@PathVariable String cartId) {
+
+        return Optional.of(cartProductService.getCartsByCartId(cartId))
+                .map(transactions -> ResponseEntity.status(HttpStatus.OK)
+                        .body(transactions))
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .build());
+    }
+
+    @PostMapping(value = "/public/transaction/add")
     private ResponseEntity<TransactionDTO> saveTransaction(@RequestBody TransactionDTO transactionDTO) {
 
         return transactionService.saveTransaction(null,transactionDTO).map(
@@ -47,7 +70,7 @@ public class TransactionController {
                         .status(HttpStatus.BAD_REQUEST)
                         .build());
     }
-    @PostMapping(value = "/private/add")
+    @PostMapping(value = "/private/transaction/add")
     private ResponseEntity<TransactionDTO> saveTransaction(@RequestBody TransactionDTO transactionDTO,
                                                            final HttpServletRequest request) {
 

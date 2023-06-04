@@ -23,6 +23,11 @@ public class AppUserServiceImpl implements AppUserService{
     }
 
     @Override
+    public Optional<AppUser> findByUserId(Long id) {
+        return Optional.of(userRepository.findAppUserById(id));
+    }
+
+    @Override
     public Optional<UserProfileDTO> findByJwtToUser(String authorizationHeader) {
         final var userEmail = jwtService.extractUsername(authorizationHeader.substring(7));
         return findByEmailToDTO(userEmail);

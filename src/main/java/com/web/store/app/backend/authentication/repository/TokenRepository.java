@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
 
@@ -17,7 +16,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
             WHERE t.user.id = ?1""")
     List<Token> findAllTokensByUser(Long userId);
 
-    Optional<Token> findByToken(String token);
+    Token findByToken(String token);
 
     @Transactional
     void deleteTokenByToken(String token);

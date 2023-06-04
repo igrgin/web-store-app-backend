@@ -38,6 +38,11 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    public List<BrandDTO> findAllBrands() {
+        return brandRepository.findAll().stream().map(this::mapToBrandDto).toList();
+    }
+
+    @Override
     public List<BrandDTO> findAllByParentCategoryName(String categoryName) {
         return brandRepository.findBrandsByCategory_Name(categoryName).stream().map(this::mapToBrandDto).toList();
     }

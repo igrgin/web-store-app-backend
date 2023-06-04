@@ -1,14 +1,13 @@
-package com.web.store.app.backend.transaction.dto;
+package com.web.store.app.backend.payment.process.transaction.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -16,7 +15,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PageableTransactionsDTO {
     private List<TransactionDTO> transactions;
-    @JsonProperty("total_transactions")
-    private Long numberOfTransactions;
+    @JsonProperty("total_pages")
+    private Long totalPages;
 
 }

@@ -9,6 +9,8 @@ public interface AppUserService {
 
     Optional<AppUser> findByEmail(String email);
 
+    Optional<AppUser> findByUserId(Long id);
+
     Optional<UserProfileDTO> findByJwtToUser(String email);
 
     Optional<UserProfileDTO> findByEmailToDTO(String email);

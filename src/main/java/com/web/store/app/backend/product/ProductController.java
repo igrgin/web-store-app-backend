@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/product/api")
 @AllArgsConstructor
 @Slf4j
+@RestController
+@RequestMapping("/product/api")
 public class ProductController {
 
     private ProductService productService;
@@ -90,7 +90,7 @@ public class ProductController {
     private ResponseEntity<PageableProductsDTO> getAllProductsByBrand(@PathVariable final String brand, final Integer page,
                                                                       @RequestParam(defaultValue = "10") final Integer size) {
 
-        return productService.findByBrand(brand, page, size).map(products1 -> ResponseEntity.status(HttpStatus.OK).body(products1))
+        return Optional.of(productService.findByBrand(brand, page, size)).map(products1 -> ResponseEntity.status(HttpStatus.OK).body(products1))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .build());
