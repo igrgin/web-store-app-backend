@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PageableTransactionsDTO {
     private List<TransactionDTO> transactions;
-    @JsonProperty("total_pages")
-    private Long totalPages;
+    @JsonProperty("total_transactions")
+    private Long totalTransactions;
 
 }

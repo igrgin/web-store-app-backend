@@ -11,4 +11,5 @@ public interface TransactionService {
     PageableTransactionsDTO findTransactionsByBrand(String brand, Integer page, Integer size);
 
     Optional<TransactionDTO> saveTransaction(String authorizationHeader, TransactionDTO transactionDTO);
+    Optional<TransactionDTO> findTransactionByCartId(String cartId);
 }

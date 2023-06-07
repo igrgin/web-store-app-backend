@@ -56,14 +56,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var jwtToken = jwtService.generateAccessToken(appUser);
         var refreshToken = jwtService.generateRefreshToken(appUser);
         deleteTokenByUser(appUser);
-        saveAppUserToken(appUser, jwtToken);
+        saveAppUserToken(appUser, refreshToken);
         return Optional.ofNullable(AuthenticationResponse.builder()
                 .accessToken(jwtToken).refreshToken(refreshToken).build());
     }
 
     @Override
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public synchronized void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        System.out.println(authHeader);
         final String refreshToken;
         final String userEmail;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -74,18 +75,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
             var user = userService.findByEmail(userEmail).orElseThrow();
-            if(jwtService.isTokenValid(refreshToken, user))
+            var isTokenPersisted = Optional.ofNullable(tokenRepository.findByToken(refreshToken)).isPresent();
+            if(jwtService.isTokenValid(refreshToken, user) && isTokenPersisted)
             {
                 deleteTokenByUser(user);
                 var accessToken = jwtService.generateAccessToken(user);
-                saveAppUserToken(user, accessToken);
+                var newRefreshToken = jwtService.generateAccessToken(user);
+                saveAppUserToken(user, newRefreshToken);
                 var authResponse = AuthenticationResponse.builder()
-                        .refreshToken(refreshToken).accessToken(accessToken).build();
+                        .refreshToken(newRefreshToken).accessToken(accessToken).build();
+                System.out.println(authResponse);
 
                 new ObjectMapper().writeValue(response.getOutputStream(),authResponse);
-
+                return;
             }
         }
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
     }
 
     private void deleteTokenByUser(AppUser appUsers) {

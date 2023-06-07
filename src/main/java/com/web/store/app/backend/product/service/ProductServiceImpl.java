@@ -32,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     public PageableProductsDTO searchProducts(String name, String category, String subcategory, String brands,
                                               Integer page, Integer size, Integer priceMin, Integer priceMax) {
+
         var queryBuilder = buildQueryString(name, category, subcategory, brands, priceMin, priceMax);
         var query = new StringQuery(queryBuilder.toString(), PageRequest.of(page, size));
         SearchHits<Product> searchHits = operations.search(query, Product.class, IndexCoordinates.of("product"));

@@ -26,8 +26,11 @@ public class ChartController {
                                                                        final int columnNumber) {
 
         return Optional.of(chartService.getTopProductsByBrand(brand,columnNumber))
-                .map(transactions -> ResponseEntity.status(HttpStatus.OK)
-                        .body(transactions))
+                .map(products -> {
+                    System.out.println(products);
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(products);
+                })
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .build());

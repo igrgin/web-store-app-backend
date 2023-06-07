@@ -8,5 +8,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 public interface TransactionRepository extends ElasticsearchRepository<Transaction, String> {
 
     Page<Transaction> findTransactionsByUserId(Long userId, Pageable pageable);
+    Transaction findTransactionsByCartId(String cartId);
 
 }

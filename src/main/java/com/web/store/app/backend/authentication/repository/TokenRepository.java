@@ -28,4 +28,8 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     List<Token> findAll();
 
     Long findUserIdByToken(String token);
+
+    Token findTokenByUser_Email(String email);
+
+    boolean existsByToken(String token);
 }

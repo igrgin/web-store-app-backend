@@ -2,12 +2,15 @@ package com.web.store.app.backend.security.filter;
 
 import com.web.store.app.backend.authentication.repository.TokenRepository;
 import com.web.store.app.backend.security.service.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,7 @@ import java.io.IOException;
 
 @AllArgsConstructor
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -41,16 +45,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try{
+            userEmail = jwtService.extractUsername(jwt);
+        }catch(JwtException ex)
+        {
+            log.error("JWT exception: ", ex);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            return;
+        }
+        var isTokenPersistedOrIgnore = !request.getRequestURI().contains("refresh") || tokenRepository.existsByToken(jwt);
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null && isTokenPersistedOrIgnore) {
             var user = this.userDetailsService.loadUserByUsername(userEmail);
-            var isTokenPersisted = Optional.ofNullable(tokenRepository.findByToken(jwt)).isPresent();
-            if (jwtService.isTokenValid(jwt, user) && isTokenPersisted) {
+            if (jwtService.isTokenValid(jwt, user)) {
                 var authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

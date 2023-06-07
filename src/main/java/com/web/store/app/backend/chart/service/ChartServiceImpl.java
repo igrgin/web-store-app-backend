@@ -2,6 +2,8 @@ package com.web.store.app.backend.chart.service;
 
 import com.web.store.app.backend.payment.process.cart.dto.CartProductDto;
 import com.web.store.app.backend.payment.process.cart.service.CartProductService;
+import com.web.store.app.backend.payment.process.transaction.model.TransactionStatus;
+import com.web.store.app.backend.payment.process.transaction.service.TransactionService;
 import com.web.store.app.backend.product.service.ProductService;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -16,10 +18,12 @@ public class ChartServiceImpl implements ChartService {
 
     private final CartProductService cartProductService;
     private final ProductService productService;
+    private final TransactionService transactionService;
     public Map<String, Integer> getTopProductsByBrand(String brand, Integer columnCount) {
 
-        var cartProducts = cartProductService.getCartsByBrand(brand);
-
+        var cartProducts = cartProductService.getCartsByBrand(brand).stream().filter(cartProductDto ->
+                !transactionService.findTransactionByCartId(cartProductDto.getId()).get().getStatus()
+                        .equals(TransactionStatus.CANCELED.name())).toList();
 
         return cartProducts.stream()
                 .collect(Collectors.groupingBy(

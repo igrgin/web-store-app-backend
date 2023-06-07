@@ -41,11 +41,12 @@ public class CartProductServiceImpl implements CartProductService {
     public List<CartProductDto> getCartsByBrand(String brand) {
 
         var productsByBrandPage = productService.findByBrand(brand, 0, 1000);
+
         var totalPages = productsByBrandPage.getTotalPages();
         if(productsByBrandPage.getProducts().isEmpty()) return List.of();
         var soldProductsByBrand = new ArrayList<>(repository.getCartProductByProductIdIsIn(productsByBrandPage.getProducts().stream()
                 .map(ProductDTO::id).toList()).stream().map(this::mapToCartProductDto).toList());
-        for (int i = 0; i < totalPages+1; i++) {
+        for (int i = 1; i < totalPages+1; i++) {
             productsByBrandPage = productService.findByBrand(brand, i, 1000);
             var productIdsQuantityPage = repository.getCartProductByProductIdIsIn(productsByBrandPage.getProducts().stream()
                     .map(ProductDTO::id).toList()).stream().map(this::mapToCartProductDto).toList();

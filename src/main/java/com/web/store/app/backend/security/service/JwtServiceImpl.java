@@ -2,6 +2,7 @@ package com.web.store.app.backend.security.service;
 
 import com.web.store.app.backend.security.properties.JwtConfigPropertiesProvider;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -23,7 +24,7 @@ public class JwtServiceImpl implements JwtService {
     private final JwtConfigPropertiesProvider jwtPropertiesProvider;
 
 
-    public String extractUsername(String token) {
+    public String extractUsername(String token) throws JwtException {
         return extractClaim(token, Claims::getSubject);
     }
     @Override
@@ -57,12 +58,12 @@ public class JwtServiceImpl implements JwtService {
         return userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws JwtException {
         final var claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    public Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) throws JwtException {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build().parseClaimsJws(token)
@@ -70,12 +71,12 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) throws JwtException {
 
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    private Date extractExpiration(String token) throws JwtException {
         return extractClaim(token, Claims::getExpiration);
     }
 

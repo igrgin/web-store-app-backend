@@ -43,6 +43,13 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(TransactionServiceImpl::mapToPageableTransactionDTO);
     }
 
+    public Optional<TransactionDTO> findTransactionByCartId(String cartId) {
+
+
+        return Optional.of(transactionRepository.findTransactionsByCartId(cartId))
+                .map(TransactionServiceImpl::mapToTransactionDTO);
+    }
+
     public Optional<TransactionDTO> saveTransaction(String authorizationHeader, TransactionDTO transactionDTO) {
         Random random = new Random();
         var statuses = TransactionStatus.values();
@@ -55,7 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionDTO.setUserId(userId.get());
         }
         transactionDTO.setStatus(statuses[random.nextInt(statuses.length)].name());
-        float price = 0F;
+        Float price = 0F;
         for (int i = 0; i < transactionDTO.getCartProduct().size(); i++) {
             var quantity = transactionDTO.getCartProduct().get(i).getQuantity();
             int finalI = i;
@@ -68,7 +75,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .equals(TransactionStatus.CANCELED)) productService.changeStock(transactionDTO.getCartProduct()
                     .get(i).getProductId(),quantity);
         }
-        transactionDTO.setPrice(Float.toString(price));
+        transactionDTO.setPrice(String.format("%.2f",price));
         transactionDTO.setCartId(cartProductService.saveCartProductBulk(transactionDTO.getCartProduct()));
 
 

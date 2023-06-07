@@ -20,7 +20,7 @@ public class UserProfileController {
     private final AppUserService userService;
 
 
-    @GetMapping("/private/user")
+    @GetMapping("/private/profile")
     private ResponseEntity<UserProfileDTO> getUserByToken(HttpServletRequest request) {
 
         return userService.findByJwtToUser(request.getHeader(HttpHeaders.AUTHORIZATION)).map(user -> ResponseEntity.status(HttpStatus.OK)

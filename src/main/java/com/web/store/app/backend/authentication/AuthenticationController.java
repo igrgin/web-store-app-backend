@@ -43,9 +43,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    private ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
          authenticationService.refreshToken(request,response);
-         return ResponseEntity.ok().build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
