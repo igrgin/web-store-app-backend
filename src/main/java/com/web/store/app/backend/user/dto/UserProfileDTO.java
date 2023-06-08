@@ -2,7 +2,6 @@ package com.web.store.app.backend.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.web.store.app.backend.user.entity.Role;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 

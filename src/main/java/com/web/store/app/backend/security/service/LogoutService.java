@@ -1,14 +1,12 @@
 package com.web.store.app.backend.security.service;
 
 import com.web.store.app.backend.authentication.repository.TokenRepository;
-import com.web.store.app.backend.user.service.AppUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
