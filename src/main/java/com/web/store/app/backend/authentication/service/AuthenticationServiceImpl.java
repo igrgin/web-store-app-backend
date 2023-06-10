@@ -80,7 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             {
                 deleteTokenByUser(user);
                 var accessToken = jwtService.generateAccessToken(user);
-                var newRefreshToken = jwtService.generateAccessToken(user);
+                var newRefreshToken = jwtService.generateRefreshToken(user);
                 saveAppUserToken(user, newRefreshToken);
                 var authResponse = AuthenticationResponse.builder()
                         .refreshToken(newRefreshToken).accessToken(accessToken).build();
