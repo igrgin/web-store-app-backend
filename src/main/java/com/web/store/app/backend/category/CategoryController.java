@@ -2,7 +2,6 @@ package com.web.store.app.backend.category;
 
 import com.web.store.app.backend.category.dto.CategoryDTO;
 import com.web.store.app.backend.category.service.CategoryService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +44,7 @@ public class CategoryController {
     @GetMapping("/public/find/subcategory/name/{categoryName}")
     private ResponseEntity<List<CategoryDTO>> getCategoriesByName(@PathVariable String categoryName) {
 
-        return Optional.of(categoryService.findAllByParentCategoryName(categoryName))
+        return Optional.ofNullable(categoryService.findAllByParentCategoryName(categoryName))
                 .map(categories -> ResponseEntity.status(HttpStatus.OK).body(categories))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .build());

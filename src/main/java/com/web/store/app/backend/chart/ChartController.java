@@ -25,7 +25,7 @@ public class ChartController {
                                                                        @RequestParam(name = "col", defaultValue = "5")
                                                                        final int columnNumber) {
 
-        return Optional.of(chartService.getTopProductsByBrand(brand,columnNumber))
+        return Optional.ofNullable(chartService.getTopProductsByBrand(brand,columnNumber))
                 .map(products -> {
                     System.out.println(products);
                     return ResponseEntity.status(HttpStatus.OK)

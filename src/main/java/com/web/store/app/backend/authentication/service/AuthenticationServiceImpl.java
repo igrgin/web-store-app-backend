@@ -85,12 +85,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 var authResponse = AuthenticationResponse.builder()
                         .refreshToken(newRefreshToken).accessToken(accessToken).build();
                 System.out.println(authResponse);
-
+                response.setStatus(HttpServletResponse.SC_CREATED);
                 new ObjectMapper().writeValue(response.getOutputStream(),authResponse);
                 return;
             }
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
     }
 

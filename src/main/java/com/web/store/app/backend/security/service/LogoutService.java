@@ -31,6 +31,7 @@ public class LogoutService implements LogoutHandler {
         }
         jwt = authHeader.substring(7);
         var userEmail = jwtService.extractUsername(jwt);
+        System.out.println("jwt: ");
         Optional.ofNullable(tokenRepository.findTokenByUser_Email(userEmail)).
                 ifPresent(storedToken -> tokenRepository.deleteTokenByToken(storedToken.getToken()));
     }

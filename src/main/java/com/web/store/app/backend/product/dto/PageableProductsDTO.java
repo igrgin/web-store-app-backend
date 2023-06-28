@@ -1,5 +1,6 @@
 package com.web.store.app.backend.product.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -17,7 +18,7 @@ import java.util.List;
 public final class PageableProductsDTO {
     @NonNull
     private final List<ProductDTO> products;
-    @JsonProperty("total_pages")
+    @JsonIgnore
     private Long totalPages;
     @JsonProperty("total_products")
     private final Long totalProducts;

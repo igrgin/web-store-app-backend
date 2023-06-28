@@ -43,8 +43,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDTO> findAllByParentCategoryName(String parentCategoryName) {
-        return categoryRepository.findAllByParentCategory_Name(parentCategoryName).stream()
+       var subcategories = categoryRepository.findAllByParentCategory_Name(parentCategoryName).stream()
                 .map(this::mapToCategoryDto).toList();
+        return subcategories.isEmpty() ? null : subcategories;
     }
 
     @Override

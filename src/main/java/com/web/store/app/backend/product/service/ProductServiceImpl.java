@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
         SearchHits<Product> searchHits = operations.search(query, Product.class, IndexCoordinates.of("product"));
         var productDtos = searchHits.stream().map(SearchHit::getContent)
                 .map(ProductServiceImpl::mapToProductDto).toList();
-        return new PageableProductsDTO(productDtos, (long) (Math.ceil(((double) (searchHits.getTotalHits() / size)))), searchHits.getTotalHits());
+        return new PageableProductsDTO(productDtos, null, searchHits.getTotalHits());
     }
 
     private static StringBuilder buildQueryString(String name, String category, String subcategory, String brands, Integer priceMin, Integer priceMax) {
