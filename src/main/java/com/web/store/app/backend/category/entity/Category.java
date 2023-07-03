@@ -12,12 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "category")
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Builder
+@Entity
+@Table(name = "category")
 public class Category {
 
     @Id

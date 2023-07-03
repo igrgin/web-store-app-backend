@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "token")
+@Table(name = "token", uniqueConstraints = @UniqueConstraint(columnNames = "user_id"))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
