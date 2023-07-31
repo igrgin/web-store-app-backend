@@ -25,13 +25,13 @@ public class ProductController {
 
     @GetMapping("/public/search")
     private ResponseEntity<PageableProductsDTO> searchProducts(@RequestParam(required = false,name = "name") String name,
-                                                               @RequestParam(required = false,name = "category") String category,
+                                                               @RequestParam(name = "category") String category,
                                                                @RequestParam(required = false,name = "subcategory") String subcategory,
                                                                @RequestParam(required = false,name = "brands") String brands,
                                                                @RequestParam(required = false, name = "pMin") final Integer priceMin,
                                                                @RequestParam(required = false, name = "pMax") final Integer priceMax,
-                                                               @RequestParam(required = false, name="page") final Integer page,
-                                                               @RequestParam(required = false, name="size") final Integer size) {
+                                                               @RequestParam(name="page") final Integer page,
+                                                               @RequestParam(name="size") final Integer size) {
 
 
         return Optional.of(productService.searchProducts(name, category, subcategory, brands,
