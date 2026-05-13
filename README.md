@@ -2,19 +2,30 @@
 
 Backend for an e-commerce web application created as part of my bachelor's degree thesis.
 
-It is built with Spring Boot and provides the server-side logic for a web store, including REST APIs, persistence, security, and Elasticsearch-based search.
+This project provides the server-side foundation for a web store. It exposes REST APIs and handles the core backend responsibilities of the application, including business logic, persistence, authentication, and search.
 
-## Features
+## What this project does
+
+The backend is responsible for:
+
+- handling HTTP requests from the frontend
+- storing and retrieving application data from MariaDB
+- providing search capabilities through Elasticsearch
+- securing endpoints with Spring Security and JWT authentication
+- validating incoming data before processing it
+- supporting the frontend of the e-commerce application
+
+## Main features
 
 - Spring Boot 3 backend written in Java 17
 - REST API for the e-commerce application
 - MariaDB for relational data storage
 - Elasticsearch for search functionality
 - Spring Security with JWT-based authentication
-- Validation support for request payloads
+- Request validation support
 - Docker Compose setup for local development
 
-## Technology Stack
+## Technology stack
 
 - Java 17
 - Spring Boot
@@ -34,7 +45,7 @@ Before running the project, make sure you have:
 - Maven 3.8+ or the included Maven Wrapper
 - Docker and Docker Compose
 
-## Project Configuration
+## Configuration
 
 The default application settings are stored in:
 
@@ -52,7 +63,9 @@ Important defaults include:
   - `http://localhost:4200`
   - `https://web-store-app-frontend.vercel.app`
 
-## Running the Project
+If you run the frontend on another address, update the CORS configuration accordingly.
+
+## How to run the project locally
 
 ### 1. Start the infrastructure
 
@@ -78,9 +91,9 @@ This will expose the following services locally:
 
 The application is configured to use a MariaDB database named `test`.
 
-If the database has not been created yet, create it in your MariaDB instance before starting the application.
+If the database has not been created yet, create it in your MariaDB instance before starting the backend.
 
-### 3. Start the backend
+### 3. Run the backend from source
 
 Using the Maven Wrapper:
 
@@ -108,20 +121,20 @@ Then run the generated JAR:
 java -jar target/web-store-app-backend-0.0.1-SNAPSHOT.jar
 ```
 
-## Useful Notes
+## Useful notes
 
 - The application uses `spring.jpa.hibernate.ddl-auto=none`, so it will not automatically create or update database tables.
 - Elasticsearch security is disabled in the Docker setup to simplify local development.
 - If you change the database password in Docker Compose, update `spring.datasource.password` in `application.properties` as well.
-- If your frontend runs on a different address, update the allowed CORS origins accordingly.
+- Make sure the database schema is prepared before running the application.
 
-## Repository Structure
+## Project structure
 
 - `src/main/java` - application source code
 - `src/main/resources` - configuration files
 - `docker-compose.yml` - local development infrastructure
 - `pom.xml` - Maven build configuration
 
-## About the Project
+## About the project
 
-This backend was developed for my bachelor's degree thesis as the server-side component of an e-commerce system. It is intended to support the core functionality of the web store, including data management, authentication, and search.
+This backend was developed for my bachelor's degree thesis as the server-side component of an e-commerce system. It is intended to support the core functionality of the web store, including data persistence, authentication, product search, and communication with the frontend application.
