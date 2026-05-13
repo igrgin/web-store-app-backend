@@ -124,4 +124,4 @@ java -jar target/web-store-app-backend-0.0.1-SNAPSHOT.jar
 
 ## About the Project
 
-This backend was developed for my bachelor's degree thesis as the server-side component of an e-commerce system. It is intended to support the core functionality of the web store, including data storage, search, and secure communication between the frontend and backend.
+This backend was developed for my bachelor's degree thesis as the server-side component of an e-commerce system. It is intended to support the core functionality of the web store, including data management, authentication, and search.
